@@ -1,2 +1,15 @@
 ---
 # Role tasks
+
+- include_role:
+    name: amtega.check_platform
+  vars:
+    check_platform_distributions:
+      centos: 6
+      fedora: 27
+      rhel: 6
+
+- block:
+    - include_tasks: install.yml
+  tags:
+    - role::check_mk_agent

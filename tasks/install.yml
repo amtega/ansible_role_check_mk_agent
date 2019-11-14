@@ -1,0 +1,15 @@
+---
+
+- block:
+    - name: Remote copy rpm file
+      copy:
+        src: "{{ check_mk_agent_rpm_file }}"
+        dest: "{{ check_mk_agent_rpm_dest_dir }}"
+
+    - name: Install check_mk_agent rpm file
+      yum:
+        name: "{{ check_mk_agent_rpm_dest_dir }}/{{ check_mk_agent_rpm_file }}"
+        state: present
+  tags:
+    - role::check_mk_agent
+    - role::check_mk_agent:install

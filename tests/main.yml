@@ -1,2 +1,55 @@
 ---
 # Tasks for testing role
+- name: Configure docker sandbox environment
+  hosts: localhost
+  roles:
+    - role: amtega.docker_presets
+      docker_presets_images_json_query: >-
+        [? starts_with(name, `centos-6`)
+           || starts_with(name, `centos-7`)
+           || starts_with(name, `fedora-29`)
+           || starts_with(name, `fedora-30`) ]
+  tags:
+    - sandbox
+
+- name: Run idempotence test
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: started
+  tags:
+    - sandbox
+
+- name: Test check_mk_agent role
+  hosts: docker_sandbox_containers
+  roles:
+
+    - role: amtega.check_mk_agent
+
+  tasks:
+
+    - name: Search if check_mk_agent rpm is installed
+      shell: "rpm -qa | grep check-mk-agent-1.5.0p5-1.noarch"
+      changed_when: false
+      register: read_rpm_search_result
+      args:
+        warn: no
+
+    - name: Assert check_mk_agent rpm is installed
+      assert:
+        that:
+          - stdout is search("check-mk-agent-1.5.0p5-1.noarch")
+      vars:
+        stdout: "{{ read_rpm_search_result.stdout }}"
+
+  tags:
+    - idempotence
+
+- name: Cleanup docker docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: absent
+  tags:
+    - cleanup
+    - sandbox

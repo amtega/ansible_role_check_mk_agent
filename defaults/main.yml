@@ -1,2 +1,4 @@
 ---
 # Role default lower priority variables
+check_mk_agent_rpm_dest_dir: /tmp
+check_mk_agent_rpm_file: check-mk-agent-1.5.0p5-1.noarch.rpm
