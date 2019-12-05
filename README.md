@@ -1,21 +1,10 @@
 # Ansible check_mk_agent role
 
-This is an [Ansible](http://www.ansible.com) role which install check_mk agent v. 1.5.0.
-
-## Requirements
-
-
-[Ansible 2.7+](http://docs.ansible.com/ansible/latest/intro_installation.html)
+This is an [Ansible](http://www.ansible.com) role to install check_mk agent.
 
 ## Role Variables
 
 A list of all the default variables for this role is available in `defaults/main.yml`.
-
-
-## Dependencies
-
-- [amtega.check_platform](https://galaxy.ansible.com/amtega/check_platform)
-
 
 ## Usage
 
@@ -27,7 +16,6 @@ This is an example playbook:
 - hosts: all
   roles:
     - role: amtega.check_mk_agent
-
 ```
 
 ## Testing
