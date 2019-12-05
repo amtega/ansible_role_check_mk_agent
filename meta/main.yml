@@ -21,7 +21,7 @@ galaxy_info:
   galaxy_tags:
     - system
     - monitoring
-    - check_mk
+    - checkmk
 
 dependencies:
   - role: amtega.check_platform
