@@ -23,3 +23,18 @@
 #     dest: /tmp
 #     timeout: 120
 #     validate_certs: yes
+
+# Boolean  if the host must be registered automatically
+
+check_mk_agent_autojoin: false
+
+# Variables to fill url request to webapi for autojoin
+check_mk_agent_server_url: >-
+  http://www.your_check_mk_server.example/site
+check_mk_agent_webapi_password: ansible_checkmk_passwd
+check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
+check_mk_agent_autojoin_folder: "/"
+
+# Email for notification purposes
+
+# check_mk_agent_autojoin_notification_email:

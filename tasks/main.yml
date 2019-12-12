@@ -14,48 +14,11 @@
   when: not check_mk_agent_artifact is defined
 
 - block:
-    - name: Get installed Check_MK agent version
-      shell: >-
-        /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
-      args:
-        warn: no
-      changed_when: false
-      register: check_mk_agent_version_result
 
-    - name: Download Check_MK agent artifact
-      include_role:
-        name: amtega.artifact
-      when:
-        - check_mk_agent_artifact is defined
-        - >-
-          not check_mk_agent_version | default("0")
-          is version("=", check_mk_agent_installed_version)
-      vars:
-        artifact: >-
-          {{ check_mk_agent_artifact | combine(override) }}
+    - include_tasks: install.yml
 
-    - name: Install Check_MK agent
-      package:
-        name: "{{ check_mk_agent_package }}"
-        state: present
+    - include_tasks: autojoin.yml
+      when: check_mk_agent_autojoin
 
-    - name: Remove Check_MK agent artifact
-      file:
-        path: "{{ check_mk_agent_package }}"
-        state: absent
-      when: check_mk_agent_artifact is defined
-  vars:
-    check_mk_agent_installed_version: >-
-      {{ check_mk_agent_version_result.stdout_lines | first }}
-
-    check_mk_agent_package: >-
-      {{ (check_mk_agent_artifact is defined)
-         | ternary((artifact_result[check_mk_agent_artifact.id]
-                   | default({})).download_path
-                   | default(""),
-                   (check_mk_agent_version is defined)
-                   | ternary("check-mk-agent-"
-                             + check_mk_agent_version | default("0"),
-                             "check-mk-agent")) }}
   tags:
     - role::check_mk_agent
