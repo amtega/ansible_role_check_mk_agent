@@ -3,22 +3,36 @@
 - block:
     - name: Ensure host is not registered
       uri:
-        url: '{{ check_mk_agent_server_url }}/check_mk/webapi.py?action=get_host&_username={{ check_mk_agent_webapi_user }}&_secret={{ check_mk_agent_webapi_password }}&output_format=json'
+        url: >-
+          {{ check_mk_agent_server_url
+             + "/check_mk/webapi.py?action=get_host&_username="
+             + check_mk_agent_webapi_user
+             + "&_secret="
+             + check_mk_agent_webapi_password
+             + "&output_format=json" }}
         method: 'POST'
-        body: 'request={ "hostname": "{{ check_mk_agent_autojoin_hostname }}" }'
+        body: 'request={ "hostname": "{{ check_mk_agent_add_request.hostname }}" }'
         return_content: yes
       register: check_mk_agent_get_host_result
       check_mode: False
       changed_when: False
       failed_when: (not "json" in check_mk_agent_get_host_result)
 
+    - debug: var=check_mk_agent_get_host_result
+
     - name: Add host to Check_MK site via WebAPI
       uri:
-        url: '{{ check_mk_agent_server_url }}/check_mk/webapi.py?action=add_host&_do_confirm=yes&_username={{ check_mk_agent_webapi_user }}&_secret={{ check_mk_agent_webapi_password }}&output_format=json'
-        method: 'POST'
-        body: 'request={ "hostname": "{{ check_mk_agent_autojoin_hostname  }}", "folder": "{{ check_mk_agent_autojoin_folder }}" }'
+        url: >-
+         {{ check_mk_agent_server_url
+            + "/check_mk/webapi.py?action=add_host&_username="
+            + check_mk_agent_webapi_user
+            + "&_secret="
+            + check_mk_agent_webapi_password
+            + "&output_format=json" }}
+        method: POST
+        body: "request={{ check_mk_agent_add_request | to_json }}"
         return_content: yes
-      when: '{{ check_mk_agent_get_host_result.json.result == "No such host" }}'
+      when: check_mk_agent_get_host_result.json.result_code != 0
       register: check_mk_agent_add_host_result
       changed_when: ("json" in check_mk_agent_add_host_result) and
                     (check_mk_agent_add_host_result.json.result_code == 0)
