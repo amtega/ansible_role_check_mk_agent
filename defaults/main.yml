@@ -31,6 +31,7 @@ check_mk_agent_autojoin: false
 # Variables to fill url request to webapi for autojoin
 check_mk_agent_server_url: >-
   http://www.your_check_mk_server.example/site
+check_mk_agent_webapi_user: ansible_checkmk_user
 check_mk_agent_webapi_password: ansible_checkmk_passwd
 check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
 check_mk_agent_autojoin_folder: "/"
