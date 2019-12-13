@@ -14,11 +14,9 @@
   when: not check_mk_agent_artifact is defined
 
 - block:
-
     - include_tasks: install.yml
 
     - include_tasks: autojoin.yml
       when: check_mk_agent_autojoin
-
   tags:
     - role::check_mk_agent

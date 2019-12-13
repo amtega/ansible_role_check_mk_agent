@@ -1,4 +1,5 @@
 ---
+# Role install tasks
 
 - block:
     - name: Get installed Check_MK agent version
@@ -16,10 +17,9 @@
         - check_mk_agent_artifact is defined
         - >-
           not check_mk_agent_version | default("0")
-          is version("=", check_mk_agent_installed_version)
+          is version(check_mk_agent_installed_version, "==")
       vars:
-        artifact: >-
-          {{ check_mk_agent_artifact | combine(override) }}
+        artifact: "{{ check_mk_agent_artifact }}"
 
     - name: Install Check_MK agent
       package:
