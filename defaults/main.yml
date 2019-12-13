@@ -4,40 +4,21 @@
 
 # check_mk_agent_version:
 
-# By default the role will install the EPEL check_mk package.
-#
-# If you want to download the artifact from another repository yo need to
-# configure the `check_mk_agent_artifact` variable to point to a
-# local/public repository that contains the required artifact
-#
-# Take a look to `amtega.artifact` role documentation to known about supported
-# types of artifacts, their specific settings and how to configure a proxy if
-# necessary
+# Autojoin the host to check_mk
 
-# check_mk_agent_artifact:
-#     id: check_mk_agent_artifact
-#     type: https
-#     host: http://download.fedoraproject.org
-#     path: pub/epel/7/x86_64/Packages/c
-#     file: check-mk-1.4.0p31-2.el7.x86_64.rpm
-#     dest: /tmp
-#     timeout: 120
-#     validate_certs: yes
+check_mk_agent_autojoin: no
 
-# Boolean  if the host must be registered automatically
+# Web API settings for autojoin
 
-check_mk_agent_autojoin: false
+# check_mk_agent_server_url: http://www.your_check_mk_server.example/site
+# check_mk_agent_webapi_user: user
+# check_mk_agent_webapi_password: password
+# check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
+# check_mk_agent_autojoin_folder: /
 
-# Variables to fill url request to webapi for autojoin
-check_mk_agent_server_url: >-
-  http://www.your_check_mk_server.example/site
-check_mk_agent_webapi_user: ansible_checkmk_user
-check_mk_agent_webapi_password: ansible_checkmk_passwd
-check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
-check_mk_agent_autojoin_folder: "/"
+# Dictionary with parameters for autojoin
 
-# Json dict with parameters needed for add host
-# check_mk_agent_add_request:
+# check_mk_agent_autojoin_parameters:
 #   hostname: <string> REQUIRED
 #   folder: <string> REQUIRED
 #   attributes: <dict> OPTIONAL
@@ -47,10 +28,35 @@ check_mk_agent_autojoin_folder: "/"
 #
 # Check https://checkmk.com/cms_web_api.html for more params
 
-check_mk_agent_add_request:
+check_mk_agent_autojoin_parameters:
   hostname: "{{ check_mk_agent_autojoin_hostname  }}"
   folder: "{{ check_mk_agent_autojoin_folder }}"
 
-# Email for notification purposes
+# Validate certs during autojoin
 
-# check_mk_agent_autojoin_notification_email:
+check_mk_agent_autojoin_validate_certs: no
+
+# By default the role will install the EPEL check_mk package.
+#
+# If you want to download the artifact from another repository yo need to
+# configure the `check_mk_agent_artifact` variable to point to a
+# local/public repository that contains the required artifact
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary
+#
+# check_mk_agent_artifact:
+#   id: check_mk_agent_artifact
+#   type: https
+#   host: http://download.fedoraproject.org
+#   path: pub/epel/7/x86_64/Packages/c
+#   file: check-mk-1.4.0p31-2.el7.x86_64.rpm
+#   dest: /tmp
+#   timeout: 120
+#   validate_certs: yes
+#   no_log: yes
+
+# Hide sensitive information
+
+check_mk_agent_no_log: yes

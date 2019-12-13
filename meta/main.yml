@@ -4,7 +4,7 @@
 galaxy_info:
   role_name: check_mk_agent
   author: José Enrique Mourón Regueira
-  description: Install check_mk monitoring agent.
+  description: Install check_mk monitoring agent and autojoin.
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
   min_ansible_version: 2.8

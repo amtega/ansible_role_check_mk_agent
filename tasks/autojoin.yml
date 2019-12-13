@@ -1,7 +1,8 @@
 ---
+# Role autojoin tasks
 
 - block:
-    - name: Ensure host is not registered
+    - name: Check if host is registered
       uri:
         url: >-
           {{ check_mk_agent_server_url
@@ -11,16 +12,18 @@
              + check_mk_agent_webapi_password
              + "&output_format=json" }}
         method: 'POST'
-        body: 'request={ "hostname": "{{ check_mk_agent_add_request.hostname }}" }'
+        body: >-
+          request={
+          "hostname": "{{ check_mk_agent_autojoin_parameters.hostname }}" }
         return_content: yes
-      register: check_mk_agent_get_host_result
+        validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
+      register: check_mk_agent_check_host_result
       check_mode: False
       changed_when: False
-      failed_when: (not "json" in check_mk_agent_get_host_result)
+      failed_when: (not "json" in check_mk_agent_check_host_result)
+      no_log: "{{ check_mk_agent_no_log | bool }}"
 
-    - debug: var=check_mk_agent_get_host_result
-
-    - name: Add host to Check_MK site via WebAPI
+    - name: Join host to Check_MK via WebAPI
       uri:
         url: >-
          {{ check_mk_agent_server_url
@@ -30,27 +33,15 @@
             + check_mk_agent_webapi_password
             + "&output_format=json" }}
         method: POST
-        body: "request={{ check_mk_agent_add_request | to_json }}"
+        body: >-
+          request={{ check_mk_agent_autojoin_parameters | to_json }}
         return_content: yes
-      when: check_mk_agent_get_host_result.json.result_code != 0
-      register: check_mk_agent_add_host_result
-      changed_when: ("json" in check_mk_agent_add_host_result) and
-                    (check_mk_agent_add_host_result.json.result_code == 0)
-      failed_when: (not "json" in check_mk_agent_add_host_result) or
-                   (check_mk_agent_add_host_result.json.result_code != 0)
-
-    - name: Send notification email
-      mail:
-        from: "{{ ANSIBLE_MAIL_FROM }}"
-        subject: Alta de host en check_mk
-        to: "{{ check_mk_agent_autojoin_notification_email }}"
-        body: "{{ lookup('template', 'autojoin.j2') }}"
-        username: "{{ ANSIBLE_USER }}"
-        password:  "{{ ANSIBLE_PASSWORD }}"
-        host: "{{ ANSIBLE_MAIL_SMTP_SERVER }}"
-        port: "{{ ANSIBLE_MAIL_SMTP_SERVER_PORT }}"
-        secure: "{{ ANSIBLE_MAIL_SECURE }}"
-      when: check_mk_agent_autojoin_notification_email is defined
-      no_log: yes
+      when: check_mk_agent_check_host_result.json.result_code != 0
+      register: check_mk_agent_join_host_result
+      changed_when: ("json" in check_mk_agent_join_host_result) and
+                    (check_mk_agent_join_host_result.json.result_code == 0)
+      failed_when: (not "json" in check_mk_agent_join_host_result) or
+                   (check_mk_agent_join_host_result.json.result_code != 0)
+      no_log: "{{ check_mk_agent_no_log | bool }}"
   tags:
     - role::check_mk_agent::autojoin

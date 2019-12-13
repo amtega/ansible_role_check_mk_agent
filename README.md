@@ -6,6 +6,10 @@ This is an [Ansible](http://www.ansible.com) role to install check_mk agent.
 
 A list of all the default variables for this role is available in `defaults/main.yml`.
 
+The role setups the following facts:
+
+- `check_mk_agent_join_host_result`: result of the autojoin task.
+
 ## Usage
 
 This is an example playbook:
