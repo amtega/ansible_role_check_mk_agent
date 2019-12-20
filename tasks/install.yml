@@ -37,7 +37,7 @@
 
     check_mk_agent_package: >-
       {{ (check_mk_agent_artifact is defined)
-         | ternary((artifact_result[check_mk_agent_artifact.id]
+         | ternary((artifact_result[check_mk_agent_artifact.id | default("")]
                    | default({})).download_path
                    | default(""),
                    (check_mk_agent_version is defined)
