@@ -25,9 +25,11 @@ galaxy_info:
 
 dependencies:
   - role: amtega.check_platform
-    tags:
-      - never
+    vars:
+      check_platform_distributions:
+        centos: 6
+        fedora: 27
+        rhel: 6
 
   - role: amtega.epel
-    tags:
-      - never
+    when: not check_mk_agent_artifact is defined
