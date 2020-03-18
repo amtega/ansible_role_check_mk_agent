@@ -1,0 +1,17 @@
+---
+# Facts tasks
+
+- name: Setup fact with changes application result
+  set_fact:
+    check_mk_agent_changes_applied: >-
+      {{ (check_mk_agent_autojoin | bool)
+         | ternary(((check_mk_agent_activate_host_result.skipped is defined)
+                    or (('json' in check_mk_agent_activate_host_result
+                                   | default([]))
+                        and (check_mk_agent_activate_host_result.json
+                             .result_code | default(none) == 0))),
+                   false) }}
+
+  tags:
+    - role::check_mk_agent
+    - role::check_mk_agent::facts

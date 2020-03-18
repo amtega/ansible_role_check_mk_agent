@@ -1,4 +1,5 @@
 ---
+# Role default lower priority variables
 
 # Version to install. If not given will install latest available version
 
@@ -6,35 +7,79 @@
 
 # Autojoin the host to check_mk
 
-check_mk_agent_autojoin: no
+check_mk_agent_autojoin: false
 
 # Web API settings for autojoin
 
-# check_mk_agent_server_url: http://www.your_check_mk_server.example/site
-# check_mk_agent_webapi_user: user
-# check_mk_agent_webapi_password: password
-# check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
-# check_mk_agent_autojoin_folder: /
+check_mk_agent_webapi_url: http://www.your_check_mk_server.example/site
+check_mk_agent_webapi_user: ansible_checkmk_user
+check_mk_agent_webapi_password: ansible_checkmk_passwd
+check_mk_agent_webapi_validate_certs: yes
 
-# Dictionary with parameters for autojoin
+# Autojoin settings
 
-# check_mk_agent_autojoin_parameters:
-#   hostname: <string> REQUIRED
-#   folder: <string> REQUIRED
-#   attributes: <dict> OPTIONAL
+check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
+check_mk_agent_autojoin_folder: "/"
+
+# Dictionary with parameters for autojoin. Check
+# https://checkmk.com/cms_web_api.html for details
+#
+# check_mk_agent_add_request:
+#   hostname: <string>      # Required
+#   folder: <string>        # Required
+#   attributes: <dict>      # Optional
 #     ipaddress: <ip>
 #     site: <site>
-#     tag_agent ...
+#     ...
 #
-# Check https://checkmk.com/cms_web_api.html for more params
 
 check_mk_agent_autojoin_parameters:
   hostname: "{{ check_mk_agent_autojoin_hostname  }}"
   folder: "{{ check_mk_agent_autojoin_folder }}"
 
-# Validate certs during autojoin
+# Dictionary with parameters needed to discover services on a host. Check
+# https://checkmk.com/cms_web_api.html for details
+#
+# check_mk_agent_discover_request:
+#   hostname: <string>    # Required
+#   mode: <string>        # Optional
+#
+# Mode parameter can bo:
+#    new: Only add new services. This is the default
+#    remove: Removes only services that are no longer available
+#    fixall: Removes services that are no longer available, and adds new ones
+#    refresh: Removes all services, and then adds all services as new
 
-check_mk_agent_autojoin_validate_certs: no
+check_mk_agent_discover_request:
+  hostname: "{{ check_mk_agent_autojoin_hostname  }}"
+
+# Dictionary with parameters needed to activate pending changes. Check
+# https://checkmk.com/cms_web_api.html for details
+#
+# check_mk_agent_activate_request:
+#   mode: <string>               # Optional
+#   sites: <array of strings>    # Optional
+#   allow_foreign_changes: [0,1] # Optional
+#   comment: <string>            # Optional
+#
+# A brief description of parámeters:
+#   mode:
+#     With this option you can decide that only a list of instances should be
+#     activated. In this case you set specific as a value
+#   sites:
+#     If you changed the mode to specific, you need to specifiy here which
+#     instances should be activated
+#   allow_foreign_changes:
+#     Sometimes it's the case that meanwhile other users also added changes.
+#     You can define with this option if you want to activate these changes,
+#     too (0 for ‘no’ and 1 for ‘yes’)
+#   comment:
+#     Add, as known from the web interface, a comment to your activation
+
+check_mk_agent_activate_request:
+  mode: specific
+  sites:
+    - site
 
 # By default the role will install the EPEL check_mk package.
 #

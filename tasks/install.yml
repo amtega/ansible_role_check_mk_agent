@@ -45,4 +45,5 @@
                              + check_mk_agent_version | default("0"),
                              "check-mk-agent")) }}
   tags:
+    - role::check_mk_agent
     - role::check_mk_agent::install
