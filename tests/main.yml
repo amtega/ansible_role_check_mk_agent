@@ -25,8 +25,24 @@
   hosts: docker_sandbox_containers
   roles:
     - role: amtega.check_mk_agent
+  tasks:
+    - name: Add autojoin testing host to sandbox group
+      add_host:
+        name: "{{ check_mk_agent_autojoin_host }}"
+        groups: docker_sandbox_containers
+      changed_when: no
+      when: check_mk_agent_autojoin_host is defined
   tags:
     - idempotence
+
+- name: Test check_mk_agent autojoin
+  hosts: >-
+    {{ check_mk_agent_autojoin_host | default('docker_sandbox_containers') }}
+  roles:
+    - role: amtega.check_mk_agent
+      vars:
+        check_mk_agent_autojoin: true
+      when: check_mk_agent_autojoin_host is defined
 
 - name: Cleanup docker docker sandbox
   hosts: localhost
