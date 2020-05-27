@@ -25,6 +25,7 @@
       package:
         name: "{{ check_mk_agent_package }}"
         state: present
+      environment: "{{ proxy_client_environment | default({}) }}"
 
     - name: Remove Check_MK agent artifact
       file:
