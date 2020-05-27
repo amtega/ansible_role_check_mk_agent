@@ -31,5 +31,8 @@ dependencies:
         fedora: 29
         rhel: 6
 
+  - role: amtega.proxy_client
+    when: not check_mk_agent_artifact is defined
+
   - role: amtega.epel
     when: not check_mk_agent_artifact is defined
