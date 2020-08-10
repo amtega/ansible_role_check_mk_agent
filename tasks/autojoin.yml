@@ -2,28 +2,7 @@
 # Role autojoin tasks
 
 - block:
-    - name: Check if host is registered
-      uri:
-        url: >-
-          {{ check_mk_agent_webapi_url
-             + "/check_mk/webapi.py?action=get_host&_username="
-             + check_mk_agent_webapi_user
-             + "&_secret="
-             + check_mk_agent_webapi_password
-             + "&output_format=json" }}
-        method: 'POST'
-        body: >-
-          request={
-          "hostname": "{{ check_mk_agent_autojoin_parameters.hostname }}" }
-        return_content: yes
-        validate_certs: "{{ check_mk_agent_webapi_validate_certs }}"
-      register: check_mk_agent_check_host_result
-      check_mode: False
-      changed_when: False
-      failed_when: (not "json" in check_mk_agent_check_host_result)
-      no_log: "{{ check_mk_agent_no_log | bool }}"
-
-    - name: Add host to Check_MK site via WebAPI
+    - name: Setup host in Check_MK site
       uri:
         url: >-
          {{ check_mk_agent_webapi_url
@@ -34,16 +13,23 @@
             + "&output_format=json" }}
         method: POST
         body: >-
-          request={{ check_mk_agent_autojoin_parameters | to_json }}
+          request={{ check_mk_agent_add_host_parameters | to_json }}
         return_content: yes
-      when: check_mk_agent_check_host_result.json.result_code != 0
       register: check_mk_agent_add_host_result
-      changed_when: ("json" in check_mk_agent_add_host_result) and
-                    (check_mk_agent_add_host_result.json.result_code == 0)
-      failed_when: (not "json" in check_mk_agent_add_host_result) or
-                   (check_mk_agent_add_host_result.json.result_code != 0)
+      changed_when: >-
+        "json" in check_mk_agent_add_host_result
+        and check_mk_agent_add_host_result.json.result_code == 0
+      failed_when: >-
+        not "json" in check_mk_agent_add_host_result
+        or (check_mk_agent_add_host_result.json.result_code != 0
+            and check_mk_agent_add_host_result.json.result
+                is not search("already exists"))
+      vars:
+        check_mk_agent_add_host_parameters:
+          hostname: "{{ check_mk_agent_autojoin_hostname }}"
+          folder: "{{ check_mk_agent_autojoin_folder }}"
 
-    - name: Discover services on host to Check_MK site via WebAPI
+    - name: Discover services on host to Check_MK site
       uri:
         url: >-
          {{ check_mk_agent_webapi_url
@@ -53,16 +39,21 @@
             + check_mk_agent_webapi_password
             + "&output_format=json" }}
         method: POST
-        body: "request={{ check_mk_agent_discover_request | to_json }}"
+        body: "request={{ check_mk_agent_discover_services_request | to_json }}"
         return_content: yes
-      when: check_mk_agent_check_host_result.json.result_code != 0
+      when: >-
+        check_mk_agent_add_host_result is changed
+        or check_mk_agent_autojoin_force_discover | bool
       register: check_mk_agent_discover_host_result
       changed_when: ("json" in check_mk_agent_discover_host_result) and
                     (check_mk_agent_discover_host_result.json.result_code == 0)
       failed_when: (not "json" in check_mk_agent_discover_host_result) or
                    (check_mk_agent_discover_host_result.json.result_code != 0)
+      vars:
+        check_mk_agent_discover_services_request:
+          hostname: "{{ check_mk_agent_autojoin_hostname }}"
 
-    - name: Activate changes on Check_MK site via WebAPI
+    - name: Activate changes on Check_MK site
       uri:
         url: >-
          {{ check_mk_agent_webapi_url
@@ -72,18 +63,33 @@
             + check_mk_agent_webapi_password
             + "&output_format=json" }}
         method: POST
-        body: "request={{ check_mk_agent_activate_request | to_json }}"
+        body: "request={{ check_mk_agent_activate_changes_request | to_json }}"
         return_content: yes
-      when: check_mk_agent_check_host_result.json.result_code != 0
-      register: check_mk_agent_activate_host_result
-      changed_when: ("json" in check_mk_agent_activate_host_result) and
-                    ((check_mk_agent_activate_host_result.json.result_code == 0)
-                      or (check_mk_agent_activate_host_result.json.result
-                          is search("There are changes from other users")))
-      failed_when: (not "json" in check_mk_agent_activate_host_result) or
-                   ((check_mk_agent_activate_host_result.json.result_code != 0)
-                     and (check_mk_agent_activate_host_result.json.result
-                          is not search("There are changes from other users")))
+      when: >-
+        check_mk_agent_add_host_result is changed
+        or check_mk_agent_discover_host_result is changed
+      register: check_mk_agent_activate_changes_result
+      changed_when: >-
+        ("json" in check_mk_agent_activate_changes_result) and
+        ((check_mk_agent_activate_changes_result.json.result_code == 0)
+          or (check_mk_agent_activate_changes_result.json.result
+              is search("There are changes from other users")))
+      failed_when: >-
+         (not "json" in check_mk_agent_activate_changes_result)
+         or ((check_mk_agent_activate_changes_result.json.result_code != 0)
+              and (check_mk_agent_activate_changes_result.json.result
+                   is not search("There are changes from other users")
+                   and (check_mk_agent_apply_changes_permissions_errors | bool
+                        and check_mk_agent_activate_changes_result.json.result
+                            is search("Insufficent permissions"))))
+      vars:
+        check_mk_agent_activate_changes_request:
+          mode: "{{ check_mk_agent_apply_changes_mode }}"
+          sites: "{{ check_mk_agent_apply_changes_sites }}"
+          allow_foreign_changes: >-
+            {{ (check_mk_agent_apply_changes_allow_foreign | bool)
+               | ternary(1, 0) }}
+          comment: "{{ check_mk_agent_apply_changes_comment }}"
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::autojoin

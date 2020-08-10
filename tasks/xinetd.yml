@@ -1,0 +1,23 @@
+---
+# Role xinetd service install tasks
+
+- name: Setup Check_MK xinetd service
+  include_role:
+    name: amtega.xinetd_service
+  vars:
+    xinetd_service_name: check-mk-agent
+    xinetd_service_type: UNLISTED
+    xinetd_service_disable: no
+    xinetd_service_port: 6556
+    xinetd_service_socket_type: stream
+    xinetd_service_protocol: tcp
+    xinetd_service_wait: no
+    xinetd_service_user: root
+    xinetd_service_server: >-
+      {{ (check_mk_agent_caching | bool)
+         | ternary("/usr/bin/check_mk_caching_agent",
+                   "/usr/bin/check_mk_agent") }}
+    xinetd_service_only_from: "{{ check_mk_agent_nagios_servers }}"
+  tags:
+    - role::check_mk_agent
+    - role::check_mk_agent::install

@@ -10,7 +10,9 @@ A list of all the default variables for this role is available in `defaults/main
 
 Te role provides the following facts:
 
-- `check_mk_agent_changes_applied`: true if changes were applied, false if changes are pending of manual authorization
+- `check_mk_agent_host_added`: true when host was added
+- `check_mk_agent_services_changed`: true when services changed
+- `check_mk_agent_services_changes_applied`: true when changed were applied
 
 ## Usage
 
@@ -35,6 +37,21 @@ $ cd amtega.check_mk_agent/tests
 $ ansible-playbook main.yml -i inventory -i ~/mycustominventory.yml --vault-id myvault@prompt -e check_mk_agent_autojoin_host=host.acme.com
 ```
 
+## Testing
+
+Tests are based on [molecule with docker containers](https://molecule.readthedocs.io/en/latest/installation.html).
+
+To run test you need provide the variables defined in `defaults/main.yml`. One way to provide this information is calling the testing playbook passing an additional inventory using the following environment variables:
+
+- `ANSIBLE_INVENTORY`: path to an inventory
+- `ANSIBLE_VAULT_PASSWORD_FILE`: path to the file containing the vault password required for the previous inventory
+
+```shell
+cd amtega.check_mk_agent
+
+ANSIBLE_INVENTORY=~/myinventory ANSIBLE_VAULT_PASSWORD_FILE=~/myvaultpassword molecule test --all
+```
+
 ## License
 
 Copyright (C) 2020 AMTEGA - Xunta de Galicia
@@ -48,3 +65,4 @@ This role is distributed in the hope that it will be useful, but WITHOUT ANY WAR
 ## Author Information
 
 - José Enrique Mourón Regueira
+- Juan Antonio Valiño García

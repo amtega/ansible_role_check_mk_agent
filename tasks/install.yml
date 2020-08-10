@@ -10,16 +10,12 @@
       changed_when: false
       register: check_mk_agent_version_result
 
-    - name: Download Check_MK agent artifact
-      include_role:
-        name: amtega.artifact
+    - include: artifact.yml
       when:
         - check_mk_agent_artifact is defined
         - >-
           not check_mk_agent_version | default("0")
           is version(check_mk_agent_installed_version, "==")
-      vars:
-        artifact: "{{ check_mk_agent_artifact }}"
 
     - name: Install Check_MK agent
       package:
@@ -32,6 +28,13 @@
         path: "{{ check_mk_agent_package }}"
         state: absent
       when: check_mk_agent_artifact is defined
+
+    - include: xinetd.yml
+
+    - name: Remove Check_MK xinetd sample caching agent service
+      file:
+        path: /etc/xinetd.d/check-mk-caching-agent
+        state: absent
   vars:
     check_mk_agent_installed_version: >-
       {{ check_mk_agent_version_result.stdout_lines | first }}
