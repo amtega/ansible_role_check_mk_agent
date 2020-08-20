@@ -15,6 +15,7 @@
         body: >-
           request={{ check_mk_agent_add_host_parameters | to_json }}
         return_content: yes
+        timeout: "{{ check_mk_agent_webapi_timeout }}"
       register: check_mk_agent_add_host_result
       changed_when: >-
         "json" in check_mk_agent_add_host_result
@@ -41,6 +42,7 @@
         method: POST
         body: "request={{ check_mk_agent_discover_services_request | to_json }}"
         return_content: yes
+        timeout: "{{ check_mk_agent_webapi_timeout }}"
       when: >-
         check_mk_agent_add_host_result is changed
         or check_mk_agent_autojoin_force_discover | bool
@@ -65,6 +67,7 @@
         method: POST
         body: "request={{ check_mk_agent_activate_changes_request | to_json }}"
         return_content: yes
+        timeout: "{{ check_mk_agent_webapi_timeout }}"
       when: >-
         check_mk_agent_add_host_result is changed
         or check_mk_agent_discover_host_result is changed
