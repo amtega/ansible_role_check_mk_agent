@@ -11,12 +11,11 @@ galaxy_info:
   platforms:
     - name: EL
       versions:
-        - 6
         - 7
     - name: Fedora
       versions:
-        - 29
-        - 30
+        - 31
+        - 32
 
   galaxy_tags:
     - system
@@ -27,14 +26,19 @@ dependencies:
   - role: amtega.check_platform
     vars:
       check_platform_distributions:
-        centos: 6
-        fedora: 29
-        redhat: 6
+        centos: 7
+        fedora: 31
+        redhat: 7
 
   - role: amtega.xinetd
 
   - role: amtega.proxy_client
-    when: not check_mk_agent_artifact is defined
+    when: >-
+      (not check_mk_agent_artifact is defined
+       or check_mk_agent_autojoin | bool)
+      and check_mk_agent_use_proxy | bool
+    vars:
+      proxy_client_permanent: no
 
   - role: amtega.epel
     when: not check_mk_agent_artifact is defined

@@ -16,6 +16,7 @@
           request={{ check_mk_agent_add_host_parameters | to_json }}
         return_content: yes
         timeout: "{{ check_mk_agent_webapi_timeout }}"
+        use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
       register: check_mk_agent_add_host_result
       changed_when: >-
         "json" in check_mk_agent_add_host_result
@@ -43,6 +44,7 @@
         body: "request={{ check_mk_agent_discover_services_request | to_json }}"
         return_content: yes
         timeout: "{{ check_mk_agent_webapi_timeout }}"
+        use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
       when: >-
         check_mk_agent_add_host_result is changed
         or check_mk_agent_autojoin_force_discover | bool
@@ -68,6 +70,7 @@
         body: "request={{ check_mk_agent_activate_changes_request | to_json }}"
         return_content: yes
         timeout: "{{ check_mk_agent_webapi_timeout }}"
+        use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
       when: >-
         check_mk_agent_add_host_result is changed
         or check_mk_agent_discover_host_result is changed
@@ -93,6 +96,8 @@
             {{ (check_mk_agent_apply_changes_allow_foreign | bool)
                | ternary(1, 0) }}
           comment: "{{ check_mk_agent_apply_changes_comment }}"
+
+  environment: "{{ proxy_client_environment | default({}) }}"
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::autojoin
