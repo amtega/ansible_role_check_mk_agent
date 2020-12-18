@@ -14,6 +14,10 @@ check_mk_agent_nagios_servers: []
 
 check_mk_agent_autojoin: no
 
+# Discover services during autojoin
+
+check_mk_agent_autojoin_discover: yes
+
 # Force services discovering during autojoin
 
 check_mk_agent_autojoin_force_discover: no
