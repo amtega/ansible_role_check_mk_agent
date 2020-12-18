@@ -46,8 +46,9 @@
         timeout: "{{ check_mk_agent_webapi_timeout }}"
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
       when: >-
-        check_mk_agent_add_host_result is changed
-        or check_mk_agent_autojoin_force_discover | bool
+        (check_mk_agent_add_host_result is changed
+         or check_mk_agent_autojoin_force_discover | bool)
+        and check_mk_agent_autojoin_discover | bool
       register: check_mk_agent_discover_host_result
       changed_when: ("json" in check_mk_agent_discover_host_result) and
                     (check_mk_agent_discover_host_result.json.result_code == 0)
