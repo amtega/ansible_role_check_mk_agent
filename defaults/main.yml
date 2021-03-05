@@ -57,6 +57,10 @@ check_mk_agent_caching: no
 
 check_mk_agent_use_proxy: no
 
+# Validate server certificates
+
+check_mk_agent_autojoin_validate_certs: no
+
 # By default the role will install the EPEL check_mk package.
 #
 # If you want to download the artifact from another repository yo need to

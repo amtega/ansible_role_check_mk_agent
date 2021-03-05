@@ -17,6 +17,7 @@
         return_content: yes
         timeout: "{{ check_mk_agent_webapi_timeout }}"
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
+        validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       register: check_mk_agent_add_host_result
       changed_when: >-
         "json" in check_mk_agent_add_host_result
@@ -45,6 +46,7 @@
         return_content: yes
         timeout: "{{ check_mk_agent_webapi_timeout }}"
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
+        validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       when: >-
         (check_mk_agent_add_host_result is changed
          or check_mk_agent_autojoin_force_discover | bool)
@@ -72,6 +74,7 @@
         return_content: yes
         timeout: "{{ check_mk_agent_webapi_timeout }}"
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
+        validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       when: >-
         check_mk_agent_add_host_result is changed
         or check_mk_agent_discover_host_result is changed
