@@ -28,17 +28,6 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on docker containers. You can setup docker engine quickly using the playbook `files/setup.yml` available in the role [amtega.docker_engine](https://galaxy.ansible.com/amtega/docker_engine).
-
-To run autojoin features test you need provide the variables defined in `defaults/main.yml` and the variable `check_mk_agent_autojoin_host` poininting to the host you want to use for testing. One way to provide this information is calling the testing playbook passing an additional plus the default one provided for testing, as it's show in this example:
-
-```shell
-$ cd amtega.check_mk_agent/tests
-$ ansible-playbook main.yml -i inventory -i ~/mycustominventory.yml --vault-id myvault@prompt -e check_mk_agent_autojoin_host=host.acme.com
-```
-
-## Testing
-
 Tests are based on [molecule with docker containers](https://molecule.readthedocs.io/en/latest/installation.html).
 
 To run test you need provide the variables defined in `defaults/main.yml`. One way to provide this information is calling the testing playbook passing an additional inventory using the following environment variables:
@@ -54,7 +43,7 @@ ANSIBLE_INVENTORY=~/myinventory ANSIBLE_VAULT_PASSWORD_FILE=~/myvaultpassword mo
 
 ## License
 
-Copyright (C) 2020 AMTEGA - Xunta de Galicia
+Copyright (C) 2021 AMTEGA - Xunta de Galicia
 
 This role is free software: you can redistribute it and/or modify it under the terms of:
 
