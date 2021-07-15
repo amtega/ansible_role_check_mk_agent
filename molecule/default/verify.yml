@@ -3,3 +3,11 @@
 - name: Verify
   hosts: molecule_hosts
   gather_facts: no
+
+  tasks:
+    - name: cat command
+      command: cat /etc/xinetd.d/check-mk-agent
+      register: command_output
+
+    - debug:
+        msg: "{{ command_output.stdout.split('\n') }}"

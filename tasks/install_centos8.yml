@@ -1,0 +1,12 @@
+---
+- block:
+  - debug:
+      var: artifact_result
+
+
+  - name: Install Check_MK agent on CentOS 8
+    dnf:
+      name: "{{ artifact_result.check_mk_agent_artifact.download_path }}"
+      state: present
+      disable_gpg_check: yes
+    # environment: "{{ proxy_client_environment | default({}) }}"

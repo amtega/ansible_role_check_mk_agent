@@ -8,20 +8,40 @@
       args:
         warn: no
       changed_when: no
+      failed_when: no
       register: check_mk_agent_version_result
+
+    - name: Check versions
+      debug:
+        var: mk_versions
+      vars:
+        mk_versions:
+          installed: "{{check_mk_agent_installed_version}}"
+          result: "{{ check_mk_agent_version_result }}"
 
     - include: artifact.yml
       when:
         - check_mk_agent_artifact is defined
         - >-
-          not check_mk_agent_version | default("0")
+          not (check_mk_agent_version | default("0"))
           is version(check_mk_agent_installed_version, "==")
 
-    - name: Install Check_MK agent
+    - name: AGENT
+      debug:
+        var: check_mk_agent_package
+
+    - when:  not (ansible_facts.distribution == "CentOS"  and ansible_facts.distribution_major_version == "8")
+      name: Install Check_MK agent
       package:
         name: "{{ check_mk_agent_package }}"
         state: present
       environment: "{{ proxy_client_environment | default({}) }}"
+
+    - when:
+        - ansible_facts['distribution'] == 'CentOS' #or ansible_facts['distribution'] == 'Fedora'
+        - ansible_facts['distribution_major_version'] == '8' #or ansible_facts['distribution_major_version'] == '34'
+      name: Install Check_MK agent on CentOS 8
+      include: install_centos8.yml
 
     - name: Remove Check_MK agent artifact
       file:
@@ -29,7 +49,8 @@
         state: absent
       when: check_mk_agent_artifact is defined
 
-    - include: xinetd.yml
+    - when:  not (ansible_facts.distribution == "CentOS"  and ansible_facts.distribution_major_version == "8")
+      include: xinetd.yml
 
     - name: Remove Check_MK xinetd sample caching agent service
       file:
@@ -37,7 +58,7 @@
         state: absent
   vars:
     check_mk_agent_installed_version: >-
-      {{ check_mk_agent_version_result.stdout_lines | first }}
+      {{ check_mk_agent_version_result.stdout_lines.0 | default("0") }}
 
     check_mk_agent_package: >-
       {{ (check_mk_agent_artifact is defined)
