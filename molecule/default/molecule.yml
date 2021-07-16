@@ -120,6 +120,21 @@ provisioner:
             username: "{{ grp_all_ansible_user }}"
             password: "{{ grp_all_ansible_gitlab_token | string }}"
             validate_certs: no
+      molecule_hosts_fedora_34:
+        vars:
+          check_mk_agent_version: 1.6.0p15
+          check_mk_agent_artifact:
+            id: check_mk_agent_artifact
+            type: gitlab
+            host: https://gitlab-sistemas.xunta.local
+            project: ansible/dml
+            branch: master
+            path: /checkmk
+            file: check-mk-agent-{{ check_mk_agent_version }}-1.noarch.rpm
+            dest: /tmp
+            username: "{{ grp_all_ansible_user }}"
+            password: "{{ grp_all_ansible_gitlab_token | string }}"
+            validate_certs: no
       molecule_hosts_fedora:
         vars:
           ansible_python_interpreter: /usr/bin/python3

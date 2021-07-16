@@ -2,12 +2,30 @@
 
 - name: Verify
   hosts: molecule_hosts
-  gather_facts: no
+  gather_facts: yes
 
   tasks:
-    - name: cat command
-      command: cat /etc/xinetd.d/check-mk-agent
-      register: command_output
+    - when:  #not (ansible_facts.distribution == "CentOS"  and ansible_facts.distribution_major_version == "8")
+        - >-
+          ( ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] < '8' )
+          or
+          ( ansible_facts['distribution'] == 'Fedora' and  ansible_facts['distribution_major_version'] < '34' )
+      block:
+        - name: cat command
+          command: cat /etc/xinetd.d/check-mk-agent
+          register: command_output
 
-    - debug:
-        msg: "{{ command_output.stdout.split('\n') }}"
+        - debug:
+            msg: "{{ command_output.stdout.split('\n') }}"
+    - when:
+        - >-
+          ( ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == '8' )
+          or
+          ( ansible_facts['distribution'] == 'Fedora' and  ansible_facts['distribution_major_version'] == '34' )
+      block:
+        - name: cat command
+          command: cat /etc/systemd/system/check_mk@.service
+          register: command_output
+
+        - debug:
+            msg: "{{ command_output.stdout.split('\n') }}"
