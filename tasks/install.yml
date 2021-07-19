@@ -31,6 +31,7 @@
         var: check_mk_agent_package
 
     - when:
+        - artifact_result is defined
         - >-
           ( ansible_facts['distribution'] == 'CentOS'
             and ansible_facts['distribution_major_version'] < '8' )
@@ -44,6 +45,7 @@
       environment: "{{ proxy_client_environment | default({}) }}"
 
     - when:
+        - artifact_result is defined
         - >-
           ( ansible_facts['distribution'] == 'CentOS'
             and ansible_facts['distribution_major_version'] == '8' )
@@ -53,11 +55,11 @@
       name: Install Check_MK agent on CentOS 8
       include: install_centos8.yml
 
-    # - name: Remove Check_MK agent artifact
-    #   file:
-    #     path: "{{ check_mk_agent_package }}"
-    #     state: absent
-    #   when: check_mk_agent_artifact is defined
+    - name: Remove Check_MK agent artifact
+      file:
+        path: "{{ check_mk_agent_package }}"
+        state: absent
+      when: check_mk_agent_artifact is defined
 
     - when:
         - >-
