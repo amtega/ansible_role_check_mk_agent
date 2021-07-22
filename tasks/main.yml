@@ -2,6 +2,10 @@
 # Role tasks
 
 - block:
+    - name: Artifact status
+      debug:
+        var: check_mk_agent_artifact
+
     - include_tasks: install.yml
       tags:
         - role::check_mk_agent::install

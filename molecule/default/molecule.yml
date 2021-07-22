@@ -25,8 +25,22 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
-  - name: "fedora31-${INSTANCE_UUID:-1}"
-    image: fedora:31
+  - name: "centos8-${INSTANCE_UUID:-1}"
+    image: centos:8
+    dockerfile: Dockerfile.systemd.j2
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - molecule_hosts
+      - molecule_hosts_centos
+      - molecule_hosts_centos_8
+
+  - name: "fedora33-${INSTANCE_UUID:-1}"
+    image: fedora:33
     dockerfile: Dockerfile.systemd.j2
     command: /sbin/init
     tmpfs:
@@ -37,9 +51,9 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_fedora
-      - molecule_hosts_fedora_31
-  - name: "fedora32-${INSTANCE_UUID:-1}"
-    image: fedora:32
+      - molecule_hosts_fedora_33
+  - name: "fedora34-${INSTANCE_UUID:-1}"
+    image: fedora:34
     dockerfile: Dockerfile.systemd.j2
     command: /sbin/init
     tmpfs:
@@ -50,7 +64,7 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_fedora
-      - molecule_hosts_fedora_32
+      - molecule_hosts_fedora_34
 provisioner:
   name: ansible
   ansible_args:
@@ -66,6 +80,51 @@ provisioner:
         vars:
           ansible_user: root
           check_mk_agent_autojoin: no
+      molecule_hosts_centos_8:
+        vars:
+          check_mk_agent_version: 1.6.0p15
+          check_mk_agent_artifact:
+            id: check_mk_agent_artifact
+            type: gitlab
+            host: https://gitlab-sistemas.xunta.local
+            project: ansible/dml
+            branch: master
+            path: /checkmk
+            file: check-mk-agent-{{ check_mk_agent_version }}-1.noarch.rpm
+            dest: /tmp
+            username: "{{ grp_all_ansible_user }}"
+            password: "{{ grp_all_ansible_gitlab_token | string }}"
+            validate_certs: no
+      molecule_hosts_fedora_33:
+        vars:
+          check_mk_agent_version: 1.6.0p15
+          check_mk_agent_artifact:
+            id: check_mk_agent_artifact
+            type: gitlab
+            host: https://gitlab-sistemas.xunta.local
+            project: ansible/dml
+            branch: master
+            path: /checkmk
+            file: check-mk-agent-{{ check_mk_agent_version }}-1.noarch.rpm
+            dest: /tmp
+            username: "{{ grp_all_ansible_user }}"
+            password: "{{ grp_all_ansible_gitlab_token | string }}"
+            validate_certs: no
+      molecule_hosts_fedora_34:
+        vars:
+          check_mk_agent_version: 1.6.0p15
+          check_mk_agent_artifact:
+            id: check_mk_agent_artifact
+            type: gitlab
+            host: https://gitlab-sistemas.xunta.local
+            project: ansible/dml
+            branch: master
+            path: /checkmk
+            file: check-mk-agent-{{ check_mk_agent_version }}-1.noarch.rpm
+            dest: /tmp
+            username: "{{ grp_all_ansible_user }}"
+            password: "{{ grp_all_ansible_gitlab_token | string }}"
+            validate_certs: no
       molecule_hosts_fedora:
         vars:
           ansible_python_interpreter: /usr/bin/python3
