@@ -11,14 +11,6 @@
       failed_when: no
       register: check_mk_agent_version_result
 
-    - name: Check versions
-      debug:
-        var: mk_versions
-      vars:
-        mk_versions:
-          installed: "{{ check_mk_agent_installed_version }}"
-          result: "{{ check_mk_agent_version_result }}"
-
     - include: artifact.yml
       when:
         - check_mk_agent_artifact is defined
@@ -31,18 +23,27 @@
         var: check_mk_agent_package
 
     - when:
-        - artifact_result is defined
         - >-
           ( ansible_facts['distribution'] == 'CentOS'
             and ansible_facts['distribution_major_version'] < '8' )
           or
           ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] < '34' )
-      name: Install Check_MK agent
-      package:
-        name: "{{ check_mk_agent_package }}"
-        state: present
-      environment: "{{ proxy_client_environment | default({}) }}"
+            and  ansible_facts['distribution_major_version'] < '33' )
+      block:
+        - name: Install Check_MK agent
+          package:
+            name: "{{ check_mk_agent_package }}"
+            state: present
+          environment: "{{ proxy_client_environment | default({}) }}"
+
+        - name: Get installed Check_MK agent version after install
+          shell: >-
+            /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
+          # args:
+          #   warn: no
+          changed_when: no
+          #failed_when: no
+          register: check_mk_agent_version_result
 
     - when:
         - artifact_result is defined
@@ -51,8 +52,8 @@
             and ansible_facts['distribution_major_version'] == '8' )
           or
           ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] == '34' )
-      name: Install Check_MK agent on CentOS 8
+            and  ansible_facts['distribution_major_version'] >= '33' )
+      name: Install Check_MK agent for CentOS 8 and Fedora34
       include: install_centos8.yml
 
     - name: Remove Check_MK agent artifact
@@ -77,19 +78,17 @@
   vars:
     check_mk_agent_installed_version: >-
       {{ check_mk_agent_version_result.stdout_lines.0 | default("0") }}
-
     check_mk_agent_package: >-
       {{ (check_mk_agent_artifact is defined)
-         | ternary((artifact_result[check_mk_agent_artifact.id | default("")]
-                   | default({})).download_path
+         | ternary((artifact_result
+                    [check_mk_agent_artifact.id | default("")]
+                    | default({})).download_path
                    | default(""),
                    (check_mk_agent_version is defined)
                    | ternary("check-mk-agent-"
                              + check_mk_agent_version | default("0"),
-                             (ansible_facts.distribution_major_version
-                              is version("31", ">="))
-                             | ternary("check-checkmk",
-                                       "check-mk-agent"))) }}
+                             "check-mk-agent")) }}
+
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::install

@@ -11,13 +11,13 @@
             and ansible_facts['distribution_major_version'] < '8' )
           or
           ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] < '34' )
+            and  ansible_facts['distribution_major_version'] < '33' )
       block:
         - name: cat command
           command: cat /etc/xinetd.d/check-mk-agent
           register: command_output
 
-        - name: Check_MK configuration status
+        - name: Check_MK configuration status in xinetd
           debug:
             msg: "{{ command_output.stdout.split('\n') }}"
     - when:
@@ -32,6 +32,6 @@
           command: "cat /etc/systemd/system/check_mk@.service"
           register: command_output
 
-        - name: Check_MK configuration status
+        - name: Check_MK configuration status in Systemd
           debug:
             msg: "{{ command_output.stdout.split('\n') }}"
