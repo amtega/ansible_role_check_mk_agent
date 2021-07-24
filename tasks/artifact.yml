@@ -1,5 +1,4 @@
 ---
-# Role artifact install tasks
 
 - name: Download Check_MK agent artifact
   include_role:

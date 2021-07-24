@@ -1,0 +1,12 @@
+---
+
+- name: Install Check_MK agent package
+  yum:
+    name: "{{ check_mk_agent_package }}"
+    state: present
+    disable_gpg_check: "{{ check_mk_agent_disable_gpg_check | bool }}"
+  environment: "{{ proxy_client_environment | default({}) }}"
+  tags:
+    - role::check_mk_agent
+    - role::check_mk_agent::install
+    - role::check_mk_agent::install::yum

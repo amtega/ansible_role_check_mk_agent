@@ -4,7 +4,10 @@
 galaxy_info:
   role_name: check_mk_agent
   namespace: amtega
-  author: José Enrique Mourón Regueira / Juan Antonio Valiño García
+  author: >-
+    José Enrique Mourón Regueira /
+    Juan Antonio Valiño García /
+    Carlos Chedas Fernández
   description: Install check_mk monitoring agent and autojoin.
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
@@ -31,8 +34,6 @@ dependencies:
         fedora: 33
         redhat: 7
 
-  # - role: amtega.xinetd
-
   - role: amtega.proxy_client
     when: >-
       (not check_mk_agent_artifact is defined
@@ -43,6 +44,10 @@ dependencies:
 
   - role: amtega.epel
     when: not check_mk_agent_artifact is defined
+
+  - role: amtega.xinetd_service
+    tags:
+      - never
 
   - role: amtega.tcpwrappers
     tags:

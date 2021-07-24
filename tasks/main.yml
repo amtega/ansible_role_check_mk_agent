@@ -1,21 +1,19 @@
 ---
-# Role tasks
 
 - block:
-    - name: Artifact status
-      debug:
-        var: check_mk_agent_artifact
-
-    - include_tasks: install.yml
+    - name: Install Check_MK agent
+      include_tasks: install.yml
       tags:
         - role::check_mk_agent::install
 
-    - include_tasks: autojoin.yml
+    - name: Autojoin Check_MK agent
+      include_tasks: autojoin.yml
       when: check_mk_agent_autojoin
       tags:
         - role::check_mk_agent::autojoin
 
-    - include_tasks: facts.yml
+    - name: Setup Check_MK agent facts
+      include_tasks: facts.yml
       tags:
         - role::check_mk_agent::facts
   tags:
