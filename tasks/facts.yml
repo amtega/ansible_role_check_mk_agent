@@ -1,5 +1,4 @@
 ---
-# Facts tasks
 
 - name: Setup fact with changes application result
   set_fact:

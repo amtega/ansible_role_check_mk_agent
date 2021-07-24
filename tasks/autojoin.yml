@@ -1,5 +1,4 @@
 ---
-# Role autojoin tasks
 
 - block:
     - name: Setup host in Check_MK site

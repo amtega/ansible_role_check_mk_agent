@@ -1,5 +1,4 @@
 ---
-# Role xinetd service install tasks
 
 - name: Setup Check_MK xinetd service
   include_role:

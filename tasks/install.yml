@@ -1,5 +1,4 @@
 ---
-# Role install tasks
 
 - block:
     - name: Get installed Check_MK agent version
@@ -11,50 +10,23 @@
       failed_when: no
       register: check_mk_agent_version_result
 
-    - include: artifact.yml
+    - name: Setup Check_MK artifact
+      include: artifact.yml
       when:
         - check_mk_agent_artifact is defined
         - >-
           not (check_mk_agent_version | default("0"))
           is version(check_mk_agent_installed_version, "==")
 
-    - name: AGENT
-      debug:
-        var: check_mk_agent_package
+    - name: Install Check_MK package
+      include_tasks: "install_package_{{ ansible_facts.pkg_mgr }}.yml"
 
-    - when:
-        - >-
-          ( ansible_facts['distribution'] == 'CentOS'
-            and ansible_facts['distribution_major_version'] < '8' )
-          or
-          ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] < '33' )
-      block:
-        - name: Install Check_MK agent
-          package:
-            name: "{{ check_mk_agent_package }}"
-            state: present
-          environment: "{{ proxy_client_environment | default({}) }}"
-
-        - name: Get installed Check_MK agent version after install
-          shell: >-
-            /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
-          # args:
-          #   warn: no
-          changed_when: no
-          #failed_when: no
-          register: check_mk_agent_version_result
-
-    - when:
-        - artifact_result is defined
-        - >-
-          ( ansible_facts['distribution'] == 'CentOS'
-            and ansible_facts['distribution_major_version'] == '8' )
-          or
-          ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] >= '33' )
-      name: Install Check_MK agent for CentOS 8 and Fedora34
-      include: install_centos8.yml
+    - name: Get installed Check_MK agent version after install
+      shell: >-
+        set -o pipefail ;
+        /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
+      changed_when: no
+      register: check_mk_agent_version_result
 
     - name: Remove Check_MK agent artifact
       file:
@@ -62,13 +34,11 @@
         state: absent
       when: check_mk_agent_artifact is defined
 
-    - when:
-        - >-
-          ( ansible_facts['distribution'] == 'CentOS'
-            and ansible_facts['distribution_major_version'] < '8' )
-          or
-          ( ansible_facts['distribution'] == 'Fedora'
-            and ansible_facts['distribution_major_version'] < '34' )
+    - when: >-
+        (ansible_facts.distribution | lower in ["centos", "redhat"]
+         and ansible_facts.distribution_major_version is version("8", "<"))
+        or (ansible_facts.distribution | lower == "fedora"
+            and ansible_facts.distribution_major_version is version("34", "<"))
       include: xinetd.yml
 
     - name: Remove Check_MK xinetd sample caching agent service
@@ -78,6 +48,7 @@
   vars:
     check_mk_agent_installed_version: >-
       {{ check_mk_agent_version_result.stdout_lines.0 | default("0") }}
+
     check_mk_agent_package: >-
       {{ (check_mk_agent_artifact is defined)
          | ternary((artifact_result
