@@ -10,6 +10,8 @@ A list of all the default variables for this role is available in `defaults/main
 
 Te role provides the following facts:
 
+- `check_mk_agent_dir`: agent directory
+- `check_mk_agent_plugins_dir`: plugins directory
 - `check_mk_agent_host_added`: true when host was added
 - `check_mk_agent_services_changed`: true when services changed
 - `check_mk_agent_services_changes_applied`: true when changed were applied

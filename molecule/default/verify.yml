@@ -3,7 +3,6 @@
 - name: Verify
   hosts: molecule_hosts
   gather_facts: yes
-
   tasks:
     - when:
         - >-
