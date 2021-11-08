@@ -99,7 +99,6 @@
             {{ (check_mk_agent_apply_changes_allow_foreign | bool)
                | ternary(1, 0) }}
           comment: "{{ check_mk_agent_apply_changes_comment }}"
-
   environment: "{{ proxy_client_environment | default({}) }}"
   tags:
     - role::check_mk_agent
