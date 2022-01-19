@@ -80,6 +80,9 @@ provisioner:
         vars:
           ansible_user: root
           check_mk_agent_autojoin: no
+      molecule_hosts_centos_8:
+        vars:
+          ansible_python_interpreter: /usr/bin/python3
       molecule_hosts_fedora:
         vars:
           ansible_python_interpreter: /usr/bin/python3
