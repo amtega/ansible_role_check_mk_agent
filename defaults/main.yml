@@ -65,7 +65,8 @@ check_mk_agent_autojoin_validate_certs: no
 
 check_mk_agent_disable_gpg_check: yes
 
-# By default the role will install the EPEL check_mk package.
+# By default the role will install the EPEL check_mk package, that currently
+# is only available for CentOS/RHEL 7
 #
 # If you want to download the artifact from another repository yo need to
 # configure the `check_mk_agent_artifact` variable to point to a

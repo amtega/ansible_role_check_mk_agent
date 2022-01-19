@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### [1.6.0] - 2021-11-08
+## [1.7.0] - 2021-11-08
+### Changed
+- Distros supported.
+- Improved tests.
+
+## [1.6.0] - 2021-11-08
 ### Added
 - Added `check_mk_agent_dir` and `check_mk_agent_plugins_dir` facts.
