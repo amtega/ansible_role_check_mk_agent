@@ -12,6 +12,7 @@
 
     - name: Gather Check_MK agent plugins directory
       shell: >-
+        set -o pipefail ;
         /usr/bin/check_mk_agent
         | head -n 10
         | grep PluginsDirectory

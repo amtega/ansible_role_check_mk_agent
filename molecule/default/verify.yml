@@ -4,33 +4,59 @@
   hosts: molecule_hosts
   gather_facts: yes
   tasks:
-    - when:
-        - >-
-          ( ansible_facts['distribution'] == 'CentOS'
-            and ansible_facts['distribution_major_version'] < '8' )
-          or
-          ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] < '33' )
+    - when: ansible_facts.distribution_major_version is version("8", "<")
       block:
         - name: cat command
           command: cat /etc/xinetd.d/check-mk-agent
+          changed_when: no
           register: command_output
 
         - name: Check_MK configuration status in xinetd
-          debug:
-            msg: "{{ command_output.stdout.split('\n') }}"
-    - when:
-        - >-
-          ( ansible_facts['distribution'] == 'CentOS'
-            and ansible_facts['distribution_major_version'] == '8' )
-          or
-          ( ansible_facts['distribution'] == 'Fedora'
-            and  ansible_facts['distribution_major_version'] == '34' )
+          assert:
+            quiet: yes
+            that: >-
+              command_output.stdout
+              is search("server.*=.*/usr/bin/check_mk_agent")
+
+    - when: ansible_facts.distribution_major_version is version("8", ">=")
       block:
         - name: cat command
-          command: "cat /etc/systemd/system/check_mk@.service"
+          command: cat /etc/systemd/system/check_mk@.service
+          changed_when: no
           register: command_output
 
-        - name: Check_MK configuration status in Systemd
-          debug:
-            msg: "{{ command_output.stdout.split('\n') }}"
+        - name: Check_MK configuration status in systemd
+          assert:
+            quiet: yes
+            that: >-
+              command_output.stdout
+              is search("ExecStart=.*/usr/bin/check_mk_agent")
+
+    - name: Gather Check_MK agent plugins directory
+      shell: >-
+        set -o pipefail ;
+        /usr/bin/check_mk_agent
+        | head -n 10
+        | grep PluginsDirectory
+        | awk '{ print $NF }'
+      changed_when: no
+      register: plugins_dir_result
+
+    - name: Check plugins
+      stat:
+        path: "{{ plugins_dir_result.stdout }}/{{ item.file }}"
+      register: stat_result
+      loop: "{{ check_mk_agent_plugins_artifacts | default([]) }}"
+
+    - name: Assert plugins are installed
+      assert:
+        quiet: yes
+        that: >-
+          stat_result.results
+          | selectattr("stat.exists", "equalto", false)
+          | list
+          | length == 0
+  vars:
+    ansible_python_interpreter: >-
+      {{ (inventory_hostname in groups.molecule_hosts_centos_7)
+         | ternary("/usr/bin/python", "/usr/bin/python3") }}

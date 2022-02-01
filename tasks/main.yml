@@ -11,10 +11,5 @@
       when: check_mk_agent_autojoin
       tags:
         - role::check_mk_agent::autojoin
-
-    - name: Setup Check_MK agent facts
-      include_tasks: facts.yml
-      tags:
-        - role::check_mk_agent::facts
   tags:
     - role::check_mk_agent
