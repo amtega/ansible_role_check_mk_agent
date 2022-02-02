@@ -65,26 +65,36 @@ check_mk_agent_autojoin_validate_certs: no
 
 check_mk_agent_disable_gpg_check: yes
 
-# By default the role will install the EPEL check_mk package.
+# If not defined the role will install the EPEL check_mk package, that currently
+# is only available for CentOS/RHEL 7
 #
-# If you want to download the artifact from another repository yo need to
-# configure the `check_mk_agent_artifact` variable to point to a
-# local/public repository that contains the required artifact
+# If you want to download the agent and plugin artifacts from another repository
+# you need to configure the `check_mk_agent_artifact_*` variables to point to a
+# local/public repository that contains the required artifacts
 #
 # Take a look to `amtega.artifact` role documentation to known about supported
 # types of artifacts, their specific settings and how to configure a proxy if
 # necessary
 #
+#
 # check_mk_agent_artifact:
 #   id: check_mk_agent_artifact
 #   type: https
-#   host: http://download.fedoraproject.org
-#   path: pub/epel/7/x86_64/Packages/c
-#   file: check-mk-1.4.0p31-2.el7.x86_64.rpm
+#   host: "http://{{ check_mk_agent_nagios_servers | first }}"
+#   path: site01/check_mk/agents
+#   file: "check-mk-agent-{{ check_mk_agent_version }}-1.noarch.rpm"
 #   dest: /tmp
 #   timeout: 120
 #   validate_certs: yes
 #   no_log: yes
+#
+# check_mk_agent_plugin_artifacts_defaults: >-
+#   {{ check_mk_agent_artifact
+#      | combine({"path": check_mk_agent_artifact.path + "/plugins"}) }}
+#
+# check_mk_agent_plugin_artifacts:
+#   - id: check_mk_plugin_logwatch_artifact
+#     file: mk_logwatch.py
 
 # Hide sensitive information
 

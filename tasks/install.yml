@@ -11,7 +11,7 @@
       register: check_mk_agent_version_result
 
     - name: Setup Check_MK artifact
-      include: artifact.yml
+      include: artifact_agent.yml
       when:
         - check_mk_agent_artifact is defined
         - >-
@@ -33,6 +33,13 @@
         path: "{{ check_mk_agent_package }}"
         state: absent
       when: check_mk_agent_artifact is defined
+
+    - name: Setup Check_MK agent facts
+      include_tasks: facts.yml
+
+    - name: Setup Check_MK plugins artifacts
+      include: artifact_plugins.yml
+      when: check_mk_agent_plugins_artifacts | default([]) | length > 0
 
     - when: >-
         (ansible_facts.distribution | lower in ["centos", "redhat"]
