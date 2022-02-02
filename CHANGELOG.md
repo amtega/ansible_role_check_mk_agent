@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [X.Y.Z] - 2022-02-02
+## [1.7.0] - 2022-02-02
 ### Changed
 - Refactored download stuff
 - Supported distros. Related to ansible/main#178
