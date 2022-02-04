@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.1] - 2022-02-04
+### Changed
+- Removed pipeline on shell tasks.
+
 ## [1.7.0] - 2022-02-02
 ### Changed
 - Refactored download stuff
