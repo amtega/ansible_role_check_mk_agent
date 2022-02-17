@@ -41,11 +41,7 @@
       include: artifact_plugins.yml
       when: check_mk_agent_plugins_artifacts | default([]) | length > 0
 
-    - when: >-
-        (ansible_facts.distribution | lower in ["centos", "redhat"]
-         and ansible_facts.distribution_major_version is version("8", "<"))
-        or (ansible_facts.distribution | lower == "fedora"
-            and ansible_facts.distribution_major_version is version("34", "<"))
+    - when: ansible_facts.distribution_major_version is version("8", "<")
       include: xinetd.yml
 
     - name: Remove Check_MK xinetd sample caching agent service
