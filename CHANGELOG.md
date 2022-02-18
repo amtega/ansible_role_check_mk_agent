@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.1] - 2022-02-18
+### Changed
+- Fix install when artifact is defined but not downloaded
+
 ## [1.8.0] - 2022-02-17
+### Changed
 - Adapted for CentOS derived distros. Related to ansible/main#263
 
 ## [1.7.1] - 2022-02-04
