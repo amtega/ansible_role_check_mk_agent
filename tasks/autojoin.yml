@@ -25,7 +25,9 @@
         not "json" in check_mk_agent_add_host_result
         or (check_mk_agent_add_host_result.json.result_code != 0
             and check_mk_agent_add_host_result.json.result
-                is not search("already exists"))
+                is not search("already exists")
+            and check_mk_agent_add_host_result.json.result
+                is not search("Modify existing hosts"))
       vars:
         check_mk_agent_add_host_parameters:
           hostname: "{{ check_mk_agent_autojoin_hostname }}"
