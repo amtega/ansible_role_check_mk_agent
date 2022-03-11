@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.2] - 2022-03-11
+### Changed
+- Fixed error autojoining existing host.
+
 ## [1.8.1] - 2022-02-18
 ### Changed
 - Fix install when artifact is defined but not downloaded
