@@ -1,0 +1,30 @@
+---
+# Calculate version to install
+check_mk_download_site: >-
+  {{ check_mk_agent_webapi_url is defined |
+     ternary( check_mk_agent_webapi_url +
+              "/check_mk/agents",
+              "" )}}
+
+check_mk_download_content: >-
+  {{ check_mk_agent_webapi_url is defined |
+     ternary(lookup("url",
+                     check_mk_download_site,
+                     wantlist=False,
+                     validate_certs=False),
+             "") }}
+
+check_mk_latest_version:  >-
+    {{ check_mk_agent_webapi_url is defined |
+       ternary((((check_mk_download_content
+                    | regex_replace("<a", "\n")
+                    | regex_replace("</a", "\n")).splitlines()
+                    | select("search", ".rpm" )
+                    | list
+                    | first).split('"')[1]).split('-')[3],
+                  "0") }}
+
+check_mk_agent_version_to_install: >-
+    {{ check_mk_agent_version is defined |
+       ternary(check_mk_agent_version,
+               check_mk_latest_version) }}
