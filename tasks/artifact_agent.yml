@@ -4,7 +4,11 @@
   include_role:
     name: amtega.artifact
   vars:
-    artifact: "{{ check_mk_agent_artifact }}"
+    artifact: >-
+      {{ check_mk_agent_artifact
+         | combine({"file": "check-mk-agent-"
+                            + check_mk_agent_version_to_install
+                            + "-1.noarch.rpm"})  }}
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::install
