@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.9.0] - 2022-04-04
 ### Added
-- Automatic calculation of the latest version available in the check_mk artifact directory
+- Automatic calculation of the latest version available in the check_mk artifact directory. Related to https://gitlab-sistemas.xunta.local/ansible/roles/amtega.check_mk_agent/-/issues/4
+
+### Changed
+- Moved tests engine to podman
+
 ## [1.8.2] - 2022-03-11
 ### Changed
 - Fixed error autojoining existing host.

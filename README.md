@@ -30,7 +30,7 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on [molecule with docker containers](https://molecule.readthedocs.io/en/latest/installation.html).
+Tests are based on [molecule with podman containers](https://molecule.readthedocs.io/en/latest/installation.html).
 
 To run test you need provide the variables defined in `defaults/main.yml`. One way to provide this information is calling the testing playbook passing an additional inventory using the following environment variables:
 
