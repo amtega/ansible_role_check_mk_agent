@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.1] - 2022-04-28
+### Fixed
+- Fixed available artifacts gathering.
+
 ## [1.9.0] - 2022-04-04
 ### Added
 - Automatic calculation of the latest version available in the check_mk artifact directory. Related to https://gitlab-sistemas.xunta.local/ansible/roles/amtega.check_mk_agent/-/issues/4

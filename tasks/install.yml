@@ -10,13 +10,26 @@
       failed_when: no
       register: check_mk_agent_version_result
 
-    - name: Setup Check_MK artifact
-      include_tasks: artifact_agent.yml
-      when:
-        - check_mk_agent_artifact is defined
-        - >-
-          not (check_mk_agent_version_to_install | default("0"))
-          is version(check_mk_agent_installed_version, "==")
+
+    - when: check_mk_agent_artifact is defined
+      block:
+        - name: Gather available artifacts
+          uri:
+            url: >-
+              {{ check_mk_agent_artifact.host
+                 + "/"
+                 + check_mk_agent_artifact.path }}
+            return_content: yes
+            validate_certs: >-
+              {{ check_mk_agent_artifact.validate_certs | default(true) }}
+          register: check_mk_agent_get_artifacts_result
+          environment: "{{ proxy_client_environment | default({}) }}"
+
+        - name: Setup Check_MK artifact
+          include_tasks: artifact_agent.yml
+          when: >-
+              not (check_mk_agent_version_to_install | default("0"))
+              is version(check_mk_agent_installed_version, "==")
 
     - name: Install Check_MK package
       include_tasks: "install_package_{{ ansible_facts.pkg_mgr }}.yml"
