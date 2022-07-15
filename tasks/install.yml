@@ -1,8 +1,9 @@
 ---
 
-- block:
+- name: Install check_mk
+  block:
     - name: Get installed Check_MK agent version
-      shell: >-
+      ansible.builtin.shell: >-
         /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
       args:
         warn: no
@@ -10,11 +11,11 @@
       failed_when: no
       register: check_mk_agent_version_result
 
-
-    - when: check_mk_agent_artifact is defined
+    - name: Install check_mk from artifact
+      when: check_mk_agent_artifact is defined
       block:
         - name: Gather available artifacts
-          uri:
+          ansible.builtin.uri:
             url: >-
               {{ check_mk_agent_artifact.host
                  + "/"
@@ -40,14 +41,14 @@
           or check_mk_agent_version_result.stdout | length == 0
 
     - name: Get installed Check_MK agent version after install
-      shell: >-
+      ansible.builtin.shell: >-
         set -o pipefail ;
         /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
       changed_when: no
       register: check_mk_agent_version_result
 
     - name: Remove Check_MK agent artifact
-      file:
+      ansible.builtin.file:
         path: "{{ check_mk_agent_package }}"
         state: absent
       when: check_mk_agent_artifact is defined
@@ -63,7 +64,7 @@
       include: xinetd.yml
 
     - name: Remove Check_MK xinetd sample caching agent service
-      file:
+      ansible.builtin.file:
         path: /etc/xinetd.d/check-mk-caching-agent
         state: absent
   vars:

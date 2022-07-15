@@ -3,13 +3,13 @@
 
 check_mk_download_site: >-
   {{ check_mk_agent_webapi_url is defined |
-     ternary( check_mk_agent_webapi_url +
-              "/check_mk/agents",
-              "" )}}
-              
+     ternary(check_mk_agent_webapi_url +
+             "/check_mk/agents",
+             "") }}
+
 check_mk_download_content: >-
-  {{ check_mk_agent_get_artifacts_result.content 
-     | default("") }}  
+  {{ check_mk_agent_get_artifacts_result.content
+     | default("") }}
 
 check_mk_latest_version:  >-
     {{ check_mk_agent_webapi_url is defined |

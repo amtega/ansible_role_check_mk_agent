@@ -4,36 +4,38 @@
   hosts: molecule_hosts
   gather_facts: yes
   tasks:
-    - when: ansible_facts.distribution_major_version is version("8", "<")
+    - name: Verify distros with version < 8
+      when: ansible_facts.distribution_major_version is version("8", "<")
       block:
         - name: cat command
-          command: cat /etc/xinetd.d/check-mk-agent
+          ansible.builtin.command: cat /etc/xinetd.d/check-mk-agent
           changed_when: no
           register: command_output
 
         - name: Check_MK configuration status in xinetd
-          assert:
+          ansible.builtin.assert:
             quiet: yes
             that: >-
               command_output.stdout
               is search("server.*=.*/usr/bin/check_mk_agent")
 
-    - when: ansible_facts.distribution_major_version is version("8", ">=")
+    - name: Verify distros with version >= 8
+      when: ansible_facts.distribution_major_version is version("8", ">=")
       block:
         - name: cat command
-          command: cat /etc/systemd/system/check_mk@.service
+          ansible.builtin.command: cat /etc/systemd/system/check_mk@.service
           changed_when: no
           register: command_output
 
         - name: Check_MK configuration status in systemd
-          assert:
+          ansible.builtin.assert:
             quiet: yes
             that: >-
               command_output.stdout
               is search("ExecStart=.*/usr/bin/check_mk_agent")
 
     - name: Gather Check_MK agent plugins directory
-      shell: >-
+      ansible.builtin.shell: >-
         set -o pipefail ;
         /usr/bin/check_mk_agent
         | head -n 10
@@ -43,13 +45,13 @@
       register: plugins_dir_result
 
     - name: Check plugins
-      stat:
+      ansible.builtin.stat:
         path: "{{ plugins_dir_result.stdout }}/{{ item.file }}"
       register: stat_result
       loop: "{{ check_mk_agent_plugins_artifacts | default([]) }}"
 
     - name: Assert plugins are installed
-      assert:
+      ansible.builtin.assert:
         quiet: yes
         that: >-
           stat_result.results

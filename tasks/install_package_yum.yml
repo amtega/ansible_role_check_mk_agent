@@ -1,7 +1,7 @@
 ---
 
 - name: Install Check_MK agent package
-  yum:
+  ansible.builtin.yum:
     name: "{{ check_mk_agent_package }}"
     state: present
     disable_gpg_check: "{{ check_mk_agent_disable_gpg_check | bool }}"

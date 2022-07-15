@@ -1,6 +1,7 @@
 ---
 
-- block:
+- name: Setup check_mk
+  block:
     - name: Install Check_MK agent
       include_tasks: install.yml
       tags:
