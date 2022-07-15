@@ -1,8 +1,9 @@
 ---
 
-- block:
+- name: Autojoin in check_mk site
+  block:
     - name: Setup host in Check_MK site
-      uri:
+      ansible.builtin.uri:
         url: >-
          {{ check_mk_agent_webapi_url
             + "/check_mk/webapi.py?action=add_host&_username="
@@ -34,7 +35,7 @@
           folder: "{{ check_mk_agent_autojoin_folder }}"
 
     - name: Discover services on host to Check_MK site
-      uri:
+      ansible.builtin.uri:
         url: >-
          {{ check_mk_agent_webapi_url
             + "/check_mk/webapi.py?action=discover_services&_username="
@@ -62,7 +63,7 @@
           hostname: "{{ check_mk_agent_autojoin_hostname }}"
 
     - name: Activate changes on Check_MK site
-      uri:
+      ansible.builtin.uri:
         url: >-
          {{ check_mk_agent_webapi_url
             + "/check_mk/webapi.py?action=activate_changes&_username="

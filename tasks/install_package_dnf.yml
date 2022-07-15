@@ -1,7 +1,7 @@
 ---
 
 - name: Install Check_MK agent package
-  dnf:
+  ansible.builtin.dnf:
     name: "{{ check_mk_agent_package }}"
     state: present
     disable_gpg_check: "{{ check_mk_agent_disable_gpg_check | bool }}"

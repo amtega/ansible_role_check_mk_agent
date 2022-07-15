@@ -26,7 +26,8 @@ check_mk_agent_autojoin_force_discover: no
 
 check_mk_agent_webapi_url: http://www.your_check_mk_server.example/site
 check_mk_agent_webapi_user: ansible_checkmk_user
-check_mk_agent_webapi_password: ansible_checkmk_passwd
+check_mk_agent_webapi_password: >-  # pragma: allowlist secret
+  ansible_checkmk_passwd
 check_mk_agent_webapi_validate_certs: yes
 check_mk_agent_webapi_timeout: 120
 
