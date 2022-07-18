@@ -2,7 +2,7 @@
 
 - name: Gather check_mk facts
   block:
-    - name: Gather Check_MK agent directory
+    - name: Gather check_mk agent directory
       ansible.builtin.shell: >-
         /usr/bin/check_mk_agent
         | head -n 10
@@ -11,7 +11,7 @@
       changed_when: no
       register: check_mk_agent_dir_result
 
-    - name: Gather Check_MK agent plugins directory
+    - name: Gather check_mk agent plugins directory
       ansible.builtin.shell: >-
         /usr/bin/check_mk_agent
         | head -n 10

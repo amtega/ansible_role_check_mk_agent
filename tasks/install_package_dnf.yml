@@ -1,6 +1,6 @@
 ---
 
-- name: Install Check_MK agent package
+- name: Install check_mk agent package
   ansible.builtin.dnf:
     name: "{{ check_mk_agent_package }}"
     state: present

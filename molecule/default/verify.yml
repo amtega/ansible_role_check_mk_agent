@@ -12,7 +12,7 @@
           changed_when: no
           register: command_output
 
-        - name: Check_MK configuration status in xinetd
+        - name: check_mk configuration status in xinetd
           ansible.builtin.assert:
             quiet: yes
             that: >-
@@ -27,14 +27,14 @@
           changed_when: no
           register: command_output
 
-        - name: Check_MK configuration status in systemd
+        - name: check_mk configuration status in systemd
           ansible.builtin.assert:
             quiet: yes
             that: >-
               command_output.stdout
               is search("ExecStart=.*/usr/bin/check_mk_agent")
 
-    - name: Gather Check_MK agent plugins directory
+    - name: Gather check_mk agent plugins directory
       ansible.builtin.shell: >-
         set -o pipefail ;
         /usr/bin/check_mk_agent
