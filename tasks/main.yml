@@ -2,12 +2,12 @@
 
 - name: Setup check_mk
   block:
-    - name: Install Check_MK agent
+    - name: Install check_mk agent
       include_tasks: install.yml
       tags:
         - role::check_mk_agent::install
 
-    - name: Autojoin Check_MK agent
+    - name: Autojoin check_mk agent
       include_tasks: autojoin.yml
       when: check_mk_agent_autojoin
       tags:

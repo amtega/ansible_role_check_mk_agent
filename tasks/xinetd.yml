@@ -1,6 +1,6 @@
 ---
 
-- name: Setup Check_MK xinetd service
+- name: Setup check_mk xinetd service
   ansible.builtin.include_role:
     name: amtega.xinetd_service
   vars:

@@ -1,6 +1,6 @@
 ---
 
-- name: Download Check_MK agent artifact
+- name: Download check_mk agent artifact
   ansible.builtin.include_role:
     name: amtega.artifact
   vars:

@@ -2,7 +2,7 @@
 
 - name: Install check_mk
   block:
-    - name: Get installed Check_MK agent version
+    - name: Get installed check_mk agent version
       ansible.builtin.shell: >-
         /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
       args:
@@ -26,13 +26,13 @@
           register: check_mk_agent_get_artifacts_result
           environment: "{{ proxy_client_environment | default({}) }}"
 
-        - name: Setup Check_MK artifact
+        - name: Setup check_mk artifact
           include_tasks: artifact_agent.yml
           when: >-
               not (check_mk_agent_version_to_install | default("0"))
               is version(check_mk_agent_installed_version, "==")
 
-    - name: Install Check_MK package
+    - name: Install check_mk package
       include_tasks: "install_package_{{ ansible_facts.pkg_mgr }}.yml"
       when:
         - >-
@@ -40,30 +40,30 @@
           is version(check_mk_agent_installed_version, "==")
           or check_mk_agent_version_result.stdout | length == 0
 
-    - name: Get installed Check_MK agent version after install
+    - name: Get installed check_mk agent version after install
       ansible.builtin.shell: >-
         set -o pipefail ;
         /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
       changed_when: no
       register: check_mk_agent_version_result
 
-    - name: Remove Check_MK agent artifact
+    - name: Remove check_mk agent artifact
       ansible.builtin.file:
         path: "{{ check_mk_agent_package }}"
         state: absent
       when: check_mk_agent_artifact is defined
 
-    - name: Setup Check_MK agent facts
+    - name: Setup check_mk agent facts
       include_tasks: facts.yml
 
-    - name: Setup Check_MK plugins artifacts
-      include: artifact_plugins.yml
+    - name: Setup check_mk plugins artifacts
+      include_tasks: artifact_plugins.yml
       when: check_mk_agent_plugins_artifacts | default([]) | length > 0
 
     - when: ansible_facts.distribution_major_version is version("8", "<")
-      include: xinetd.yml
+      include_tasks: xinetd.yml
 
-    - name: Remove Check_MK xinetd sample caching agent service
+    - name: Remove check_mk xinetd sample caching agent service
       ansible.builtin.file:
         path: /etc/xinetd.d/check-mk-caching-agent
         state: absent
