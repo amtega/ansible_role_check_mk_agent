@@ -28,17 +28,11 @@
 
         - name: Setup check_mk artifact
           include_tasks: artifact_agent.yml
-          when: >-
-              not (check_mk_agent_version_to_install | default("0"))
-              is version(check_mk_agent_installed_version, "==")
+          when: check_mk_agent_install_required
 
     - name: Install check_mk package
       include_tasks: "install_package_{{ ansible_facts.pkg_mgr }}.yml"
-      when:
-        - >-
-          not (check_mk_agent_version_to_install | default("0"))
-          is version(check_mk_agent_installed_version, "==")
-          or check_mk_agent_version_result.stdout | length == 0
+      when: check_mk_agent_install_required
 
     - name: Get installed check_mk agent version after install
       ansible.builtin.shell: >-
@@ -81,6 +75,12 @@
                    | ternary("check-mk-agent-"
                              + check_mk_agent_version | default("0"),
                              "check-mk-agent")) }}
+
+    check_mk_agent_install_required: >-
+      {{ not (check_mk_agent_version_to_install | default("0"))
+         is version(check_mk_agent_installed_version, "==")
+         or check_mk_agent_version_result.stdout | default("") | length == 0
+         or check_mk_agent_force_install | bool }}
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::install
