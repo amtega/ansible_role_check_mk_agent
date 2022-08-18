@@ -66,6 +66,10 @@ check_mk_agent_autojoin_validate_certs: no
 
 check_mk_agent_disable_gpg_check: yes
 
+# Force install
+
+check_mk_agent_force_install: no
+
 # If not defined the role will install the EPEL check_mk package, that currently
 # is only available for CentOS/RHEL 7
 #
