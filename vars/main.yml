@@ -16,7 +16,7 @@ check_mk_latest_version:  >-
        ternary((((check_mk_download_content
                     | regex_replace("<a", "\n")
                     | regex_replace("</a", "\n")).splitlines()
-                    | select("search", ".rpm" )
+                    | select("search", ".rpm")
                     | list
                     | first).split('"')[1]).split('-')[3],
                   "0") }}
