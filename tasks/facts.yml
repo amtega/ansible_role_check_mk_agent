@@ -1,9 +1,13 @@
 ---
 
 - name: Gather check_mk facts
+  tags:
+    - role::check_mk_agent
+    - role::check_mk_agent::facts
   block:
     - name: Gather check_mk agent directory
       ansible.builtin.shell: >-
+        set -o pipefail ;
         /usr/bin/check_mk_agent
         | head -n 10
         | grep AgentDirectory
@@ -13,6 +17,7 @@
 
     - name: Gather check_mk agent plugins directory
       ansible.builtin.shell: >-
+        set -o pipefail ;
         /usr/bin/check_mk_agent
         | head -n 10
         | grep PluginsDirectory
@@ -35,6 +40,3 @@
 
         check_mk_agent_services_changes_applied: >-
           {{ check_mk_agent_activate_changes_result | default({}) is changed }}
-  tags:
-    - role::check_mk_agent
-    - role::check_mk_agent::facts

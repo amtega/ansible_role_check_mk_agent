@@ -8,7 +8,8 @@
       {{ check_mk_agent_artifact
          | combine({"file": "check-mk-agent-"
                             + check_mk_agent_version_to_install
-                            + "-1.noarch.rpm"}) }}
+                            + "-1.noarch.rpm"})
+         | combine({"force": "false"}) }}
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::install

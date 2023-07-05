@@ -104,3 +104,6 @@ check_mk_agent_force_install: no
 # Hide sensitive information
 
 check_mk_agent_no_log: yes
+
+# Seconds to wait for register 
+check_mk_agent_wait_for_register: 10

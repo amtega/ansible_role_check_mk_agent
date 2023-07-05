@@ -7,12 +7,12 @@
     - name: Verify distros with version < 8
       when: ansible_facts.distribution_major_version is version("8", "<")
       block:
-        - name: cat command
+        - name: Cat command
           ansible.builtin.command: cat /etc/xinetd.d/check-mk-agent
           changed_when: no
           register: command_output
 
-        - name: check_mk configuration status in xinetd
+        - name: Check_mk configuration status in xinetd
           ansible.builtin.assert:
             quiet: yes
             that: >-
@@ -22,12 +22,12 @@
     - name: Verify distros with version >= 8
       when: ansible_facts.distribution_major_version is version("8", ">=")
       block:
-        - name: cat command
+        - name: Cat command
           ansible.builtin.command: cat /etc/systemd/system/check_mk@.service
           changed_when: no
           register: command_output
 
-        - name: check_mk configuration status in systemd
+        - name: Check_mk configuration status in systemd
           ansible.builtin.assert:
             quiet: yes
             that: >-
