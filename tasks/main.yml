@@ -3,12 +3,12 @@
 - name: Setup check_mk
   block:
     - name: Install check_mk agent
-      include_tasks: install.yml
+      ansible.builtin.include_tasks: install.yml
       tags:
         - role::check_mk_agent::install
 
     - name: Autojoin check_mk agent
-      include_tasks: autojoin.yml
+      ansible.builtin.include_tasks: autojoin.yml
       when: check_mk_agent_autojoin
       tags:
         - role::check_mk_agent::autojoin

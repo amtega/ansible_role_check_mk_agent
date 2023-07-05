@@ -1,6 +1,10 @@
 ---
 
 - name: Autojoin in check_mk site
+  environment: "{{ proxy_client_environment | default({}) }}"
+  tags:
+    - role::check_mk_agent
+    - role::check_mk_agent::autojoin
   block:
     - name: Setup host in check_mk site
       ansible.builtin.uri:
@@ -36,7 +40,7 @@
           folder: "{{ check_mk_agent_autojoin_folder }}"
 
     - name: Sleep to wait host register and continue 
-      wait_for:
+      ansible.builtin.wait_for:
         timeout: "{{ check_mk_agent_wait_for_register }}"
 
     - name: Discover services on host to check_mk site
@@ -109,7 +113,3 @@
             {{ (check_mk_agent_apply_changes_allow_foreign | bool)
                | ternary(1, 0) }}
           comment: "{{ check_mk_agent_apply_changes_comment }}"
-  environment: "{{ proxy_client_environment | default({}) }}"
-  tags:
-    - role::check_mk_agent
-    - role::check_mk_agent::autojoin

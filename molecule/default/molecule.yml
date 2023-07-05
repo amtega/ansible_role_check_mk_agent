@@ -2,7 +2,7 @@
 
 dependency:
   name: galaxy
-  enabled: true
+  enabled: yes
   options:
     ignore-certs: yes
     ignore-errors: yes
