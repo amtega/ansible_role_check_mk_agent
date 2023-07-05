@@ -79,7 +79,8 @@
       ansible.builtin.include_tasks: artifact_plugins.yml
       when: check_mk_agent_plugins_artifacts | default([]) | length > 0
 
-    - when: ansible_facts.distribution_major_version is version("8", "<")
+    - name: Setup xinetd
+      when: ansible_facts.distribution_major_version is version("8", "<")
       ansible.builtin.include_tasks: xinetd.yml
 
     - name: Remove check_mk xinetd sample caching agent service
