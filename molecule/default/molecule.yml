@@ -2,7 +2,7 @@
 
 dependency:
   name: galaxy
-  enabled: yes
+  enabled: true
   options:
     ignore-certs: yes
     ignore-errors: yes
@@ -39,37 +39,11 @@ platforms:
       - molecule_hosts_centos
       - molecule_hosts_centos_8
 
-  - name: "fedora34-${INSTANCE_UUID:-1}"
-    image: quay.io/fedora/fedora:34
-    dockerfile: Dockerfile.systemd.j2
-    command: /sbin/init
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    groups:
-      - molecule_hosts
-      - molecule_hosts_fedora
-      - molecule_hosts_fedora_34
-  - name: "fedora35-${INSTANCE_UUID:-1}"
-    image: quay.io/fedora/fedora:35
-    dockerfile: Dockerfile.systemd.j2
-    command: /sbin/init
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    groups:
-      - molecule_hosts
-      - molecule_hosts_fedora
-      - molecule_hosts_fedora_35
 provisioner:
   name: ansible
-  ansible_args:
-    - --inventory=${ANSIBLE_INVENTORY}
-    - --vault-password-file=${ANSIBLE_VAULT_PASSWORD_FILE:-/etc/hostname}
+  # ansible_args:
+  #   - --inventory=${ANSIBLE_INVENTORY}
+  #   - --vault-password-file=${ANSIBLE_VAULT_PASSWORD_FILE:-/etc/hostname}
   config_options:
     defaults:
       callbacks_enabled: profile_tasks
@@ -81,9 +55,6 @@ provisioner:
           ansible_user: root
           check_mk_agent_autojoin: no
       molecule_hosts_centos_8:
-        vars:
-          ansible_python_interpreter: /usr/bin/python3
-      molecule_hosts_fedora:
         vars:
           ansible_python_interpreter: /usr/bin/python3
 verifier:

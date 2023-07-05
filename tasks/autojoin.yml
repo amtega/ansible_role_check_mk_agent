@@ -19,6 +19,7 @@
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       register: check_mk_agent_add_host_result
+      no_log: "{{ check_mk_agent_no_log | default(true) }}"
       changed_when: >-
         "json" in check_mk_agent_add_host_result
         and check_mk_agent_add_host_result.json.result_code == 0
@@ -33,6 +34,10 @@
         check_mk_agent_add_host_parameters:
           hostname: "{{ check_mk_agent_autojoin_hostname }}"
           folder: "{{ check_mk_agent_autojoin_folder }}"
+
+    - name: Sleep to wait host register and continue 
+      wait_for:
+        timeout: "{{ check_mk_agent_wait_for_register }}"
 
     - name: Discover services on host to check_mk site
       ansible.builtin.uri:
@@ -49,6 +54,7 @@
         timeout: "{{ check_mk_agent_webapi_timeout }}"
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
+        no_log: "{{ check_mk_agent_no_log | default(true) }}"
       when: >-
         (check_mk_agent_add_host_result is changed
          or check_mk_agent_autojoin_force_discover | bool)
@@ -77,6 +83,7 @@
         timeout: "{{ check_mk_agent_webapi_timeout }}"
         use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
+        no_log: "{{ check_mk_agent_no_log | default(true) }}"
       when: >-
         check_mk_agent_add_host_result is changed
         or check_mk_agent_discover_host_result is changed
