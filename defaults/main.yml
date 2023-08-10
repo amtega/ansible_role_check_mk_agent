@@ -22,19 +22,21 @@ check_mk_agent_autojoin_discover: yes
 
 check_mk_agent_autojoin_force_discover: no
 
-# Web API settings for autojoin
+# API settings for autojoin
 
-check_mk_agent_webapi_url: http://www.your_check_mk_server.example/site
-check_mk_agent_webapi_user: ansible_checkmk_user
-check_mk_agent_webapi_password: >-  # pragma: allowlist secret
+check_mk_agent_api_url: http://www.your_check_mk_server.example
+check_mk_agent_api_site: site
+check_mk_agent_api_user: ansible_checkmk_user
+check_mk_agent_api_password: >-  # pragma: allowlist secret
   ansible_checkmk_passwd
-check_mk_agent_webapi_validate_certs: yes
-check_mk_agent_webapi_timeout: 120
+check_mk_agent_api_validate_certs: yes
+check_mk_agent_api_timeout: 120
 
 # Autojoin settings
 
 check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
 check_mk_agent_autojoin_folder: "/"
+check_mk_agent_autojoin_state: present
 
 # Apply changes settings. See https://checkmk.com/cms_web_api_references.html
 # for details
@@ -105,5 +107,5 @@ check_mk_agent_force_install: no
 
 check_mk_agent_no_log: yes
 
-# Seconds to wait for register 
+# Seconds to wait for register
 check_mk_agent_wait_for_register: 10

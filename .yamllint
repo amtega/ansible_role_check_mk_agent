@@ -42,5 +42,5 @@ rules:
     type: unix
   trailing-spaces: disable
   truthy:
-    allowed-values: ['YES', 'Yes', 'yes', 'NO', 'No', 'no']
+    allowed-values: ['YES', 'Yes', 'yes', 'NO', 'No', 'no', 'true', 'false']
     check-keys: no
