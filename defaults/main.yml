@@ -37,6 +37,9 @@ check_mk_agent_api_timeout: 120
 check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
 check_mk_agent_autojoin_folder: "/"
 check_mk_agent_autojoin_state: present
+# You must indicate a delegate host to autojoin steps, to ensure module
+# compatibility with python version
+check_mk_agent_autojoin_delegate_host: localhost
 
 # Apply changes settings. See https://checkmk.com/cms_web_api_references.html
 # for details

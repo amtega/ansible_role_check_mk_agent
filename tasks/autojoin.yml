@@ -20,6 +20,7 @@
         folder: "{{ check_mk_agent_autojoin_folder }}"
         state: "{{ check_mk_agent_autojoin_state }}"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
+      delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       register: check_mk_agent_add_host_result
       no_log: "{{ check_mk_agent_no_log | default(true) }}"
 
@@ -37,6 +38,7 @@
         state:  "fix_all"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       no_log: "{{ check_mk_agent_no_log | default(true) }}"
+      delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       when: >-
         (check_mk_agent_add_host_result is changed
          or check_mk_agent_autojoin_force_discover | bool)
@@ -55,6 +57,7 @@
           {{ check_mk_agent_apply_changes_allow_foreign }}
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       no_log: "{{ check_mk_agent_no_log | default(true) }}"
+      delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       when: >-
         (check_mk_agent_add_host_result is changed
         or check_mk_agent_discover_host_result is changed)
