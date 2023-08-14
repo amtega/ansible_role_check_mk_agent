@@ -53,9 +53,14 @@ provisioner:
       molecule_hosts:
         vars:
           ansible_user: root
-          check_mk_agent_autojoin: no
+          check_mk_agent_autojoin: yes
+          check_mk_agent_no_log: no
       molecule_hosts_centos_8:
         vars:
           ansible_python_interpreter: /usr/bin/python3
+      molecule_hosts_centos_7:
+        vars:
+          ansible_python_interpreter: /usr/bin/python3
+          check_mk_agent_autojoin_delegate_host: localhost
 verifier:
   name: ansible

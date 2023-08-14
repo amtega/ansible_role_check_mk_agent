@@ -7,109 +7,59 @@
     - role::check_mk_agent::autojoin
   block:
     - name: Setup host in check_mk site
-      ansible.builtin.uri:
-        url: >-
-         {{ check_mk_agent_webapi_url
-            + "/check_mk/webapi.py?action=add_host&_username="
-            + check_mk_agent_webapi_user
-            + "&_secret="
-            + check_mk_agent_webapi_password
-            + "&output_format=json" }}
-        method: POST
-        body: >-
-          request={{ check_mk_agent_add_host_parameters | to_json }}
-        return_content: yes
-        timeout: "{{ check_mk_agent_webapi_timeout }}"
-        use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
+      checkmk.general.host:
+        server_url: "{{ check_mk_agent_api_url }}"
+        site: "{{ check_mk_agent_api_site }}"
+        automation_user: "{{ check_mk_agent_api_user }}"
+        automation_secret: "{{ check_mk_agent_api_password }}"
+        name: "{{ check_mk_agent_autojoin_hostname }}"
+        folder: "{{ check_mk_agent_autojoin_folder }}"
+        state: "{{ check_mk_agent_autojoin_state }}"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
+      delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       register: check_mk_agent_add_host_result
       no_log: "{{ check_mk_agent_no_log | default(true) }}"
-      changed_when: >-
-        "json" in check_mk_agent_add_host_result
-        and check_mk_agent_add_host_result.json.result_code == 0
-      failed_when: >-
-        not "json" in check_mk_agent_add_host_result
-        or (check_mk_agent_add_host_result.json.result_code != 0
-            and check_mk_agent_add_host_result.json.result
-                is not search("already exists")
-            and check_mk_agent_add_host_result.json.result
-                is not search("Modify existing hosts"))
-      vars:
-        check_mk_agent_add_host_parameters:
-          hostname: "{{ check_mk_agent_autojoin_hostname }}"
-          folder: "{{ check_mk_agent_autojoin_folder }}"
 
-    - name: Sleep to wait host register and continue 
+    - name: Sleep to wait host register and continue
       ansible.builtin.wait_for:
         timeout: "{{ check_mk_agent_wait_for_register }}"
 
     - name: Discover services on host to check_mk site
-      ansible.builtin.uri:
-        url: >-
-         {{ check_mk_agent_webapi_url
-            + "/check_mk/webapi.py?action=discover_services&_username="
-            + check_mk_agent_webapi_user
-            + "&_secret="
-            + check_mk_agent_webapi_password
-            + "&output_format=json" }}
-        method: POST
-        body: "request={{ check_mk_agent_discover_services_request | to_json }}"
-        return_content: yes
-        timeout: "{{ check_mk_agent_webapi_timeout }}"
-        use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
+      checkmk.general.discovery:
+        server_url: "{{ check_mk_agent_api_url }}"
+        site: "{{ check_mk_agent_api_site }}"
+        automation_user: "{{ check_mk_agent_api_user }}"
+        automation_secret: "{{ check_mk_agent_api_password }}"
+        host_name: "{{ check_mk_agent_autojoin_hostname }}"
+        state:  "fix_all"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
-        no_log: "{{ check_mk_agent_no_log | default(true) }}"
+      no_log: "{{ check_mk_agent_no_log | default(true) }}"
+      delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       when: >-
         (check_mk_agent_add_host_result is changed
          or check_mk_agent_autojoin_force_discover | bool)
         and check_mk_agent_autojoin_discover | bool
+        and (check_mk_agent_autojoin_state != "absent")
       register: check_mk_agent_discover_host_result
-      changed_when: ("json" in check_mk_agent_discover_host_result) and
-                    (check_mk_agent_discover_host_result.json.result_code == 0)
-      failed_when: (not "json" in check_mk_agent_discover_host_result) or
-                   (check_mk_agent_discover_host_result.json.result_code != 0)
-      vars:
-        check_mk_agent_discover_services_request:
-          hostname: "{{ check_mk_agent_autojoin_hostname }}"
 
     - name: Activate changes on check_mk site
-      ansible.builtin.uri:
-        url: >-
-         {{ check_mk_agent_webapi_url
-            + "/check_mk/webapi.py?action=activate_changes&_username="
-            + check_mk_agent_webapi_user
-            + "&_secret="
-            + check_mk_agent_webapi_password
-            + "&output_format=json" }}
-        method: POST
-        body: "request={{ check_mk_agent_activate_changes_request | to_json }}"
-        return_content: yes
-        timeout: "{{ check_mk_agent_webapi_timeout }}"
-        use_proxy: "{{ check_mk_agent_use_proxy | bool }}"
+      checkmk.general.activation:
+        server_url: "{{ check_mk_agent_api_url }}"
+        site: "{{ check_mk_agent_api_site }}"
+        automation_user: "{{ check_mk_agent_api_user }}"
+        automation_secret: "{{ check_mk_agent_api_password }}"
+        sites: "{{ check_mk_agent_apply_changes_sites }}"
+        force_foreign_changes: >-
+          {{ check_mk_agent_apply_changes_allow_foreign }}
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
-        no_log: "{{ check_mk_agent_no_log | default(true) }}"
+      no_log: "{{ check_mk_agent_no_log | default(true) }}"
+      delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       when: >-
-        check_mk_agent_add_host_result is changed
-        or check_mk_agent_discover_host_result is changed
+        (check_mk_agent_add_host_result is changed
+        or check_mk_agent_discover_host_result is changed)
+        and check_mk_agent_autojoin_state != "absent"
       register: check_mk_agent_activate_changes_result
-      changed_when: >-
-        ("json" in check_mk_agent_activate_changes_result) and
-        ((check_mk_agent_activate_changes_result.json.result_code == 0)
-          or (check_mk_agent_activate_changes_result.json.result
-              is search("There are changes from other users")))
       failed_when: >-
-         (not "json" in check_mk_agent_activate_changes_result)
-         or ((check_mk_agent_activate_changes_result.json.result_code != 0)
-              and (check_mk_agent_activate_changes_result.json.result
-                   is not search("There are changes from other users")
-                   and (check_mk_agent_apply_changes_permissions_errors | bool
-                        and check_mk_agent_activate_changes_result.json.result
-                            is search("Insufficent permissions"))))
-      vars:
-        check_mk_agent_activate_changes_request:
-          mode: "{{ check_mk_agent_apply_changes_mode }}"
-          sites: "{{ check_mk_agent_apply_changes_sites }}"
-          allow_foreign_changes: >-
-            {{ (check_mk_agent_apply_changes_allow_foreign | bool)
-               | ternary(1, 0) }}
-          comment: "{{ check_mk_agent_apply_changes_comment }}"
+        {{ (check_mk_agent_activate_changes_result.failed)
+            and (check_mk_agent_activate_changes_result.msg
+                 is not search("Unauthorized: There are foreign changes")) }}

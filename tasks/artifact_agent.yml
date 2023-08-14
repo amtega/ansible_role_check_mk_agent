@@ -9,7 +9,8 @@
          | combine({"file": "check-mk-agent-"
                             + check_mk_agent_version_to_install
                             + "-1.noarch.rpm"})
-         | combine({"force": "false"}) }}
+         | combine({"force": "false"})
+         | combine({"version": check_mk_agent_version_to_install}) }}
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::install
