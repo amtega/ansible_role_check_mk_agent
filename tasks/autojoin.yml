@@ -6,10 +6,6 @@
     - role::check_mk_agent
     - role::check_mk_agent::autojoin
   block:
-    - name: Debug some variables
-      ansible.builtin.debug:
-        var: check_mk_agent_api_password
-
     - name: Setup host in check_mk site
       checkmk.general.host:
         server_url: "{{ check_mk_agent_api_url }}"
@@ -63,3 +59,7 @@
         or check_mk_agent_discover_host_result is changed)
         and check_mk_agent_autojoin_state != "absent"
       register: check_mk_agent_activate_changes_result
+      failed_when: >-
+        {{ (check_mk_agent_activate_changes_result.failed)
+            and (check_mk_agent_activate_changes_result.msg
+                 is not search("Unauthorized: There are foreign changes")) }}
