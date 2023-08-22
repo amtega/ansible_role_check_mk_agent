@@ -1,5 +1,4 @@
 ---
-
 - name: Setup check_mk
   tags:
     - role::check_mk_agent
@@ -11,6 +10,6 @@
 
     - name: Autojoin check_mk agent
       ansible.builtin.include_tasks: autojoin.yml
-      when: check_mk_agent_autojoin
+      when: check_mk_agent_autojoin | bool
       tags:
         - role::check_mk_agent::autojoin

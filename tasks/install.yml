@@ -1,5 +1,4 @@
 ---
-
 - name: Install check_mk
   vars:
     check_mk_agent_installed_version: >-
@@ -26,13 +25,12 @@
     - role::check_mk_agent::install
   block:
     - name: Get installed check_mk agent version
-      ansible.builtin.shell: >-
-        set -o pipefail ;
-        /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
-      args:
-        warn: no
-      changed_when: no
-      failed_when: no
+      ansible.builtin.shell:
+        cmd: >-
+          set -o pipefail ;
+          /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
+      changed_when: false
+      failed_when: false
       register: check_mk_agent_version_result
 
     - name: Install check_mk from artifact
@@ -44,7 +42,7 @@
               {{ check_mk_agent_artifact.host
                  + "/"
                  + check_mk_agent_artifact.path }}
-            return_content: yes
+            return_content: true
             validate_certs: >-
               {{ check_mk_agent_artifact.validate_certs | default(true) }}
           register: check_mk_agent_get_artifacts_result
@@ -63,7 +61,7 @@
       ansible.builtin.shell: >-
         set -o pipefail ;
         /usr/bin/check_mk_agent | grep '[V]ersion' | awk {'print $2'}
-      changed_when: no
+      changed_when: false
       register: check_mk_agent_version_result
 
     - name: Remove check_mk agent artifact

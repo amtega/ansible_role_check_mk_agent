@@ -1,16 +1,15 @@
 ---
-
 - name: Setup check_mk xinetd service
   ansible.builtin.include_role:
     name: amtega.xinetd_service
   vars:
     xinetd_service_name: check-mk-agent
     xinetd_service_type: UNLISTED
-    xinetd_service_disable: no
+    xinetd_service_disable: false
     xinetd_service_port: 6556
     xinetd_service_socket_type: stream
     xinetd_service_protocol: tcp
-    xinetd_service_wait: no
+    xinetd_service_wait: false
     xinetd_service_user: root
     xinetd_service_server: >-
       {{ (check_mk_agent_caching | bool)

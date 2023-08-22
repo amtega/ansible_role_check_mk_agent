@@ -32,15 +32,13 @@ This is an example playbook:
 
 Tests are based on [molecule with podman containers](https://molecule.readthedocs.io/en/latest/installation.html).
 
-To run test you need provide the variables defined in `defaults/main.yml`. One way to provide this information is calling the testing playbook passing an additional inventory using the following environment variables:
-
-- `ANSIBLE_INVENTORY`: path to an inventory
-- `ANSIBLE_VAULT_PASSWORD_FILE`: path to the file containing the vault password required for the previous inventory
+Tests need role variable be defined. So, to run the tests you have to pass
+extra variables/inventories:
 
 ```shell
 cd amtega.check_mk_agent
 
-ANSIBLE_INVENTORY=~/myinventory ANSIBLE_VAULT_PASSWORD_FILE=~/myvaultpassword molecule test --all
+molecule test -- --vault-id <id>@prompt -i <inventory_path>
 ```
 
 ## License

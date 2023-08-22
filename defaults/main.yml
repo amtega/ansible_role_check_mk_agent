@@ -9,18 +9,17 @@
 # be allowed to connect to the agent
 
 check_mk_agent_nagios_servers: []
-
 # Autojoin the host to check_mk
 
-check_mk_agent_autojoin: no
+check_mk_agent_autojoin: false
 
 # Discover services during autojoin
 
-check_mk_agent_autojoin_discover: yes
+check_mk_agent_autojoin_discover: true
 
 # Force services discovering during autojoin
 
-check_mk_agent_autojoin_force_discover: no
+check_mk_agent_autojoin_force_discover: false
 
 # API settings for autojoin
 
@@ -29,51 +28,46 @@ check_mk_agent_api_site: site
 check_mk_agent_api_user: ansible_checkmk_user
 check_mk_agent_api_password: >-  # pragma: allowlist secret
   ansible_checkmk_passwd
-check_mk_agent_api_validate_certs: yes
+check_mk_agent_api_validate_certs: true
 check_mk_agent_api_timeout: 120
 
 # Autojoin settings
 
 check_mk_agent_autojoin_hostname: "{{ inventory_hostname }}"
-check_mk_agent_autojoin_folder: "/"
+check_mk_agent_autojoin_folder: /
 check_mk_agent_autojoin_state: present
-# You must indicate a delegate host to autojoin steps, to ensure module
-# compatibility with python version
-check_mk_agent_autojoin_delegate_host: localhost
+# Delegate host for autojoin steps
+check_mk_agent_autojoin_delegate_host: "{{ inventory_hostname }}"
 
 # Apply changes settings. See https://checkmk.com/cms_web_api_references.html
 # for details
 
 check_mk_agent_apply_changes_mode: specific
-check_mk_agent_apply_changes_sites: ["site"]
-check_mk_agent_apply_changes_allow_foreign: no
+check_mk_agent_apply_changes_sites: [site]
+check_mk_agent_apply_changes_allow_foreign: false
 check_mk_agent_apply_changes_comment: Ansible changes
-
-# Indicate if permissions errors must be ignored when applying changes
-
-check_mk_agent_apply_changes_permissions_errors: yes
 
 # Use agent caching wrapper. Useful if you use fully redundant monitoring and
 # poll the client from more then one monitoring servers in parallel
 # /usr/bin/check_mk_caching_agent
 
-check_mk_agent_caching: no
+check_mk_agent_caching: false
 
 # Use proxy for API rest operations
 
-check_mk_agent_use_proxy: no
+check_mk_agent_use_proxy: false
 
 # Validate server certificates
 
-check_mk_agent_autojoin_validate_certs: no
+check_mk_agent_autojoin_validate_certs: false
 
 # Disable GPG check during package install
 
-check_mk_agent_disable_gpg_check: yes
+check_mk_agent_disable_gpg_check: true
 
 # Force install
 
-check_mk_agent_force_install: no
+check_mk_agent_force_install: false
 
 # If not defined the role will install the EPEL check_mk package, that currently
 # is only available for CentOS/RHEL 7
@@ -108,7 +102,8 @@ check_mk_agent_force_install: no
 
 # Hide sensitive information
 
-check_mk_agent_no_log: yes
+check_mk_agent_no_log: true
 
 # Seconds to wait for register
+
 check_mk_agent_wait_for_register: 10

@@ -1,7 +1,6 @@
 ---
-
 - name: Prepare
   hosts: molecule_hosts_centos_7
-  gather_facts: no
+  gather_facts: false
   roles:
-    - role: amtega.xinetd
+    - amtega.xinetd

@@ -1,5 +1,4 @@
 ---
-
 - name: Autojoin in check_mk site
   environment: "{{ proxy_client_environment | default({}) }}"
   tags:
@@ -31,7 +30,7 @@
         automation_user: "{{ check_mk_agent_api_user }}"
         automation_secret: "{{ check_mk_agent_api_password }}"
         host_name: "{{ check_mk_agent_autojoin_hostname }}"
-        state:  "fix_all"
+        state: fix_all
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       no_log: "{{ check_mk_agent_no_log | default(true) }}"
       delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
@@ -56,10 +55,10 @@
       delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
       when: >-
         (check_mk_agent_add_host_result is changed
-        or check_mk_agent_discover_host_result is changed)
+         or check_mk_agent_discover_host_result is changed)
         and check_mk_agent_autojoin_state != "absent"
       register: check_mk_agent_activate_changes_result
       failed_when: >-
-        {{ (check_mk_agent_activate_changes_result.failed)
-            and (check_mk_agent_activate_changes_result.msg
-                 is not search("Unauthorized: There are foreign changes")) }}
+        (check_mk_agent_activate_changes_result.failed)
+         and (check_mk_agent_activate_changes_result.msg
+              is not search("Unauthorized: There are foreign changes"))

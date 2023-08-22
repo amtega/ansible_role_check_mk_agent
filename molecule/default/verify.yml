@@ -1,20 +1,19 @@
 ---
-
 - name: Verify
   hosts: molecule_hosts
-  gather_facts: yes
+  gather_facts: true
   tasks:
     - name: Verify distros with version < 8
       when: ansible_facts.distribution_major_version is version("8", "<")
       block:
         - name: Cat command
           ansible.builtin.command: cat /etc/xinetd.d/check-mk-agent
-          changed_when: no
+          changed_when: false
           register: command_output
 
         - name: Check_mk configuration status in xinetd
           ansible.builtin.assert:
-            quiet: yes
+            quiet: true
             that: >-
               command_output.stdout
               is search("server.*=.*/usr/bin/check_mk_agent")
@@ -24,12 +23,12 @@
       block:
         - name: Cat command
           ansible.builtin.command: cat /etc/systemd/system/check_mk@.service
-          changed_when: no
+          changed_when: false
           register: command_output
 
         - name: Check_mk configuration status in systemd
           ansible.builtin.assert:
-            quiet: yes
+            quiet: true
             that: >-
               command_output.stdout
               is search("ExecStart=.*/usr/bin/check_mk_agent")
@@ -41,7 +40,7 @@
         | head -n 10
         | grep PluginsDirectory
         | awk '{ print $NF }'
-      changed_when: no
+      changed_when: false
       register: plugins_dir_result
 
     - name: Check plugins
@@ -52,7 +51,7 @@
 
     - name: Assert plugins are installed
       ansible.builtin.assert:
-        quiet: yes
+        quiet: true
         that: >-
           stat_result.results
           | selectattr("stat.exists", "equalto", false)

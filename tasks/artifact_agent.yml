@@ -1,16 +1,16 @@
 ---
-
 - name: Download check_mk agent artifact
   ansible.builtin.include_role:
     name: amtega.artifact
   vars:
+    # noqa var-naming[no-role-prefix]
     artifact: >-
       {{ check_mk_agent_artifact
          | combine({"file": "check-mk-agent-"
                             + check_mk_agent_version_to_install
                             + "-1.noarch.rpm"})
-         | combine({"force": "false"})
-         | combine({"version": check_mk_agent_version_to_install}) }}
+         | combine({"version": check_mk_agent_version_to_install})
+         | combine({"check_download": false}) }}
   tags:
     - role::check_mk_agent
     - role::check_mk_agent::install
