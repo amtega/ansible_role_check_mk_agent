@@ -1,5 +1,5 @@
 ---
-
 roles:
   - amtega.xinetd
-collections: []
+collections:
+  - checkmk.general

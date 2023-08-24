@@ -11,17 +11,17 @@ check_mk_download_content: >-
   {{ check_mk_agent_get_artifacts_result.content
      | default("") }}
 
-check_mk_latest_version:  >-
-    {{ check_mk_agent_webapi_url is defined |
-       ternary((((check_mk_download_content
-                    | regex_replace("<a", "\n")
-                    | regex_replace("</a", "\n")).splitlines()
-                    | select("search", ".rpm")
-                    | list
-                    | first).split('"')[1]).split('-')[3],
-                  "0") }}
+check_mk_latest_version: >-
+  {{ check_mk_agent_webapi_url is defined |
+     ternary((((check_mk_download_content
+                  | regex_replace("<a", "\n")
+                  | regex_replace("</a", "\n")).splitlines()
+                  | select("search", ".rpm")
+                  | list
+                  | first).split('"')[1]).split('-')[3],
+                "0") }}
 
 check_mk_agent_version_to_install: >-
-    {{ check_mk_agent_version is defined |
-       ternary(check_mk_agent_version,
-               check_mk_latest_version) }}
+  {{ check_mk_agent_version is defined |
+     ternary(check_mk_agent_version,
+             check_mk_latest_version) }}

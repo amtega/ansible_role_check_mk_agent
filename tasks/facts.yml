@@ -1,5 +1,4 @@
 ---
-
 - name: Gather check_mk facts
   tags:
     - role::check_mk_agent
@@ -12,7 +11,7 @@
         | head -n 10
         | grep AgentDirectory
         | awk '{ print $NF }'
-      changed_when: no
+      changed_when: false
       register: check_mk_agent_dir_result
 
     - name: Gather check_mk agent plugins directory
@@ -22,7 +21,7 @@
         | head -n 10
         | grep PluginsDirectory
         | awk '{ print $NF }'
-      changed_when: no
+      changed_when: false
       register: check_mk_agent_plugins_dir_result
 
     - name: Setup fact with changes application result

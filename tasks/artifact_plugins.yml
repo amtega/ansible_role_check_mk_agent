@@ -1,5 +1,4 @@
 ---
-
 - name: Download check_mk agent artifact
   ansible.builtin.include_role:
     name: amtega.artifact
@@ -8,6 +7,7 @@
     loop_var: check_mk_agent_plugin_artifact
     label: "{{ check_mk_agent_plugin_artifact.id }}"
   vars:
+    # noqa var-naming[no-role-prefix]
     artifact_defaults: >-
       {{ check_mk_agent_plugin_artifact_defaults | default({}) }}
     artifact_overrides:
