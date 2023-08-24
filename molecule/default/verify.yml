@@ -6,12 +6,12 @@
     - name: Verify distros with version < 8
       when: ansible_facts.distribution_major_version is version("8", "<")
       block:
-        - name: Cat command
+        - name: Gather check_mk agent xinetd config
           ansible.builtin.command: cat /etc/xinetd.d/check-mk-agent
           changed_when: false
           register: command_output
 
-        - name: Check_mk configuration status in xinetd
+        - name: Assert check_mk agent xinetd config is valid
           ansible.builtin.assert:
             quiet: true
             that: >-
@@ -21,17 +21,33 @@
     - name: Verify distros with version >= 8
       when: ansible_facts.distribution_major_version is version("8", ">=")
       block:
-        - name: Cat command
-          ansible.builtin.command: cat /etc/systemd/system/check_mk@.service
-          changed_when: false
-          register: command_output
+        - name: Gather service facts
+          ansible.builtin.service_facts:
 
-        - name: Check_mk configuration status in systemd
+        - name: Assert check_mk services ared valid
           ansible.builtin.assert:
-            quiet: true
-            that: >-
-              command_output.stdout
-              is search("ExecStart=.*/usr/bin/check_mk_agent")
+            that:
+              - check_mk_running_services | length > 0
+              - check_mk_failed_services | length == 0
+          vars:
+            check_mk_running_services: >-
+              {{ ansible_facts.services
+                 | dict2items
+                 | map(attribute="value")
+                 | selectattr("name", "search", "check")
+                 | selectattr("name", "search", "mk")
+                 | selectattr("state", "equalto", "running")
+                 | list }}
+
+            check_mk_failed_services: >-
+              {{ ansible_facts.services
+                 | dict2items
+                 | map(attribute="value")
+                 | selectattr("name", "search", "check")
+                 | selectattr("name", "search", "mk")
+                 | rejectattr("state", "equalto", "running")
+                 | rejectattr("state", "equalto", "unknown")
+                 | list }}
 
     - name: Gather check_mk agent plugins directory
       ansible.builtin.shell: >-
