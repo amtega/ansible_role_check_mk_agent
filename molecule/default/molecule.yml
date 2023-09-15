@@ -50,6 +50,10 @@ provisioner:
           ansible_user: root
           check_mk_agent_autojoin: true
           check_mk_agent_no_log: false
+          check_mk_agent_autojoin_attributes:
+            labels:
+              provisioner: ansible
+              category: test
       molecule_hosts_centos_8:
         vars:
           ansible_python_interpreter: /usr/bin/python3
@@ -59,3 +63,16 @@ provisioner:
           check_mk_agent_autojoin_delegate_host: localhost
 verifier:
   name: ansible
+scenario:
+  test_sequence:
+    - dependency
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - cleanup
+    - destroy

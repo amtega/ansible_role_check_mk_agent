@@ -3,8 +3,10 @@
   hosts: molecule_hosts
   gather_facts: true
   tasks:
-    - name: Verify distros with version < 8
-      when: ansible_facts.distribution_major_version is version("8", "<")
+    - name: Verify legacy installs
+      when:
+        - ansible_facts.distribution_major_version is version("8", "<")
+        - ck_mk_agent_version | default('2.0.0') is version("2", "<")
       block:
         - name: Gather check_mk agent xinetd config
           ansible.builtin.command: cat /etc/xinetd.d/check-mk-agent
@@ -18,8 +20,8 @@
               command_output.stdout
               is search("server.*=.*/usr/bin/check_mk_agent")
 
-    - name: Verify distros with version >= 8
-      when: ansible_facts.distribution_major_version is version("8", ">=")
+    - name: Verify last versions install
+      when: ck_mk_agent_version | default('2.0.0') is version("2", ">=")
       block:
         - name: Gather service facts
           ansible.builtin.service_facts:
@@ -34,8 +36,7 @@
               {{ ansible_facts.services
                  | dict2items
                  | map(attribute="value")
-                 | selectattr("name", "search", "check")
-                 | selectattr("name", "search", "mk")
+                 | selectattr("name", "search", "cmk")
                  | selectattr("state", "equalto", "running")
                  | list }}
 
@@ -43,8 +44,7 @@
               {{ ansible_facts.services
                  | dict2items
                  | map(attribute="value")
-                 | selectattr("name", "search", "check")
-                 | selectattr("name", "search", "mk")
+                 | selectattr("name", "search", "cmk")
                  | rejectattr("state", "equalto", "running")
                  | rejectattr("state", "equalto", "unknown")
                  | list }}
