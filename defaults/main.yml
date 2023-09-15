@@ -9,6 +9,10 @@
 # be allowed to connect to the agent
 
 check_mk_agent_nagios_servers: []
+
+# Name of check_mk service if version is 2.0 or upper
+check_mk_agent_service: cmk-agent-ctl-daemon
+
 # Autojoin the host to check_mk
 
 check_mk_agent_autojoin: false
@@ -38,6 +42,11 @@ check_mk_agent_autojoin_folder: /
 check_mk_agent_autojoin_state: present
 # Delegate host for autojoin steps
 check_mk_agent_autojoin_delegate_host: "{{ inventory_hostname }}"
+# Dict with attributes to update on host creation
+# check_mk_agent_autojoin_attributes:
+#   labels:
+#     provisioner: ansible
+#     category: test
 
 # Apply changes settings. See https://checkmk.com/cms_web_api_references.html
 # for details

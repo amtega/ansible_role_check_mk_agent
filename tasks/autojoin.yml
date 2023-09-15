@@ -13,6 +13,8 @@
         automation_secret: "{{ check_mk_agent_api_password }}"
         name: "{{ check_mk_agent_autojoin_hostname }}"
         folder: "{{ check_mk_agent_autojoin_folder }}"
+        update_attributes: >-
+          {{ check_mk_agent_autojoin_attributes | default(omit) }}
         state: "{{ check_mk_agent_autojoin_state }}"
         validate_certs: "{{ check_mk_agent_autojoin_validate_certs }}"
       delegate_to: "{{ check_mk_agent_autojoin_delegate_host }}"
