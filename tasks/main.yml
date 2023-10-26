@@ -3,6 +3,29 @@
   tags:
     - role::check_mk_agent
   block:
+    - name: Check platform
+      ansible.builtin.include_role:
+        name: amtega.check_platform
+      vars:
+        check_platform_distributions:
+          centos: 7
+          redhat: 7
+
+    - name: Setup proxy client
+      ansible.builtin.include_role:
+        name: amtega.proxy_client
+      when: >-
+        (not check_mk_agent_artifact is defined
+        or check_mk_agent_autojoin | bool)
+        and check_mk_agent_use_proxy | bool
+      vars:
+        proxy_client_permanent: false
+
+    - name: Setup epel
+      ansible.builtin.include_role:
+        name: amtega.epel
+      when: not check_mk_agent_artifact is defined
+
     - name: Install check_mk agent
       ansible.builtin.include_tasks: install.yml
       tags:
