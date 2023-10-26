@@ -1,0 +1,7 @@
+---
+dependencies:
+  - amtega.check_platform
+  - amtega.proxy_client
+  - amtega.epel
+  - amtega.xinetd_service
+  - amtega.tcpwrappers
