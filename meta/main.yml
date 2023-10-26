@@ -2,10 +2,7 @@
 galaxy_info:
   role_name: check_mk_agent
   namespace: amtega
-  author: >-
-    José Enrique Mourón Regueira /
-    Juan Antonio Valiño García /
-    Carlos Chedas Fernández
+  author: José Enrique Mourón Regueira
   description: Install check_mk monitoring agent and autojoin.
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
