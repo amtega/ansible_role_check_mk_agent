@@ -1,7 +1,6 @@
 ---
-roles:
-  - name: amtega.check_platform
-  - name: amtega.proxy_client
-  - name: amtega.epel
-  - name: amtega.xinetd_service
-  - name: amtega.tcpwrappers
+- name: amtega.check_platform
+- name: amtega.proxy_client
+- name: amtega.epel
+- name: amtega.xinetd_service
+- name: amtega.tcpwrappers
